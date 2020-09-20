@@ -1,0 +1,47 @@
+
+SDW printf() initialized
+
+Opening LED isolator & turning on green
+
+Initializing MCP9804 temp. sensors:
+	- device 0x18 configured
+	- device 0x19 configured
+	- device 0x1A configured
+	- device 0x1B configured
+	- device 0x1C configured
+	- device 0x1E configured
+	- device 0x1F configured
+
+Board Sierra test iteration:
+
+(1) Blinking red LED
+
+(2) Clock freq. and source demonstration:
+	- SYSCLK freq.: 52000000 [Hz]
+	- HCLK freq.:   52000000 [Hz]
+	- PCLK1 freq.:  52000000 [Hz]
+	- PCLK2 freq.:  52000000 [Hz]
+
+(3) Power management current readings:
+	- 3V3 channel: 10.946154 [mA]
+	- 5V channel:  9.918509 [mA]
+
+(4) Temperature sensors readings:
+	- device 0x18 temperature: 27.688 [°C]
+	- device 0x19 temperature: 27.375 [°C]
+	- device 0x1A temperature: 27.625 [°C]
+	- device 0x1B temperature: 27.438 [°C]
+	- device 0x1C temperature: 27.500 [°C]
+	- device 0x1E temperature: 27.625 [°C]
+	- device 0x1F temperature: 27.250 [°C]
+
+(5) NOR-Flash QSPI manufacturer data request:
+	- memory 1 dev. type: 0x01 0x60 0x19 
+	- memory 2 dev. type: 0x01 0x60 0x19 
+	- memory 3 dev. type: 0x01 0x60 0x19 
+	- memory 1 unique ID: 0xFF 0xFF 0xFF 0xFF 0x18 0x2C 0x70 0x82 
+	- memory 2 unique ID: 0x00 0x00 0x00 0x00 0x12 0xCC 0x70 0x82 
+	- memory 3 unique ID: 0x00 0x00 0x00 0x00 0x11 0x40 0x50 0x82 
+
+(6) F-RAM SPI manufacturer data request:
+	- memory dev. type and unique ID: 0x7F 0x7F 0x7F 0x7F 0x7F 0x7F 0xC2 0x25 0xC8 
