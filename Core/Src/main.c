@@ -124,16 +124,25 @@ int QSPI_read_data(QSPI_HandleTypeDef *hqspi, int device, uint8_t command, uint8
 	ret = HAL_QSPI_Receive(hqspi, buff, HAL_QPSI_TIMEOUT_DEFAULT_VALUE);
 	if(ret != HAL_OK) return 2;
 
+	//power off all devices
+	HAL_GPIO_WritePin(GPIOA, QSPI_CS1_Pin | QSPI_CS2_Pin , GPIO_PIN_SET);
+	HAL_GPIO_WritePin(QSPI_CS3_GPIO_Port, QSPI_CS3_Pin, GPIO_PIN_SET);
+
 	return 0;
 }
 
-int SPI_read_data(SPI_HandleTypeDef *hspi, uint8_t *command, uint8_t *buff, int size){
+int SPI_read_data(SPI_HandleTypeDef *hspi, int device, uint8_t *command, uint8_t *buff, int size){
 	HAL_StatusTypeDef ret;
 
-	//toggle NCS pin
+	//reset all devices
 	HAL_GPIO_WritePin(GPIOC, SPI1_CS1_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS2_Pin | SPI1_CS3_Pin, GPIO_PIN_SET);
 	HAL_Delay(1);
-	HAL_GPIO_WritePin(GPIOC, SPI1_CS1_Pin, GPIO_PIN_RESET);
+
+	//select appropriate memory
+	if(device == 1) HAL_GPIO_WritePin(GPIOC, SPI1_CS1_Pin, GPIO_PIN_RESET);
+	else if(device ==2 ) HAL_GPIO_WritePin(GPIOA, SPI1_CS2_Pin, GPIO_PIN_RESET);
+	else HAL_GPIO_WritePin(GPIOA, SPI1_CS3_Pin, GPIO_PIN_RESET);
 
 	ret = HAL_SPI_Transmit(hspi, command, 1, 100);
 	if(ret != HAL_OK) return 1;
@@ -141,8 +150,9 @@ int SPI_read_data(SPI_HandleTypeDef *hspi, uint8_t *command, uint8_t *buff, int 
 	ret = HAL_SPI_Receive(hspi, buff, size, 100);
 	if(ret != HAL_OK) return 2;
 
-	//power off device
+	//power off all devices
 	HAL_GPIO_WritePin(GPIOC, SPI1_CS1_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS2_Pin | SPI1_CS3_Pin, GPIO_PIN_SET);
 
 	return 0;
 }
@@ -187,7 +197,7 @@ int main(void)
 
 	//test SDW printf
   	HAL_Delay(1500);
-	printf("\n\nSDW printf() initialized\n\n");
+	printf("\nSDW printf() initialized\n\n");
 
 	//open USER1 isolator and turn on green LED
 	printf("Opening LED isolator & turning on green\n\n");
@@ -345,15 +355,17 @@ int main(void)
 
 	//prepare variables
 	int SPI_ret; uint8_t SPI_buff[9];
-
-	//request and read device ID
 	uint8_t SPI_command[] = {0x9F};
-	SPI_ret = SPI_read_data(&hspi1, SPI_command, SPI_buff, 9);
-	if(SPI_ret != 0) printf("\t- memory ID failed at %d\n", SPI_ret);
-	else {
-		printf("\t- memory dev. type and unique ID: ");
-		for(int j=0; j<9; j++) printf("0x%02X ", SPI_buff[j]);
-		printf("\n");
+
+	//loop thru memories
+	for(int i=3; i<6; i++) {
+		SPI_ret = SPI_read_data(&hspi1, i-2, SPI_command, SPI_buff, 9);
+		if(SPI_ret != 0) printf("\t- memory %d failed at %d\n", i, SPI_ret);
+		else {
+			printf("\t- memory %d dev. type and unique ID: ", i);
+			for(int j=0; j<9; j++) printf("0x%02X ", SPI_buff[j]);
+			printf("\n");
+		}
 	}
 
 	//new line needed
