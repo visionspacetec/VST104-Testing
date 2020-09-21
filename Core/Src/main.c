@@ -358,8 +358,8 @@ int main(void)
 	uint8_t SPI_command[] = {0x9F};
 
 	//loop thru memories
-	for(int i=3; i<6; i++) {
-		SPI_ret = SPI_read_data(&hspi1, i-2, SPI_command, SPI_buff, 9);
+	for(int i=4; i<7; i++) {
+		SPI_ret = SPI_read_data(&hspi1, i-3, SPI_command, SPI_buff, 9);
 		if(SPI_ret != 0) printf("\t- memory %d failed at %d\n", i, SPI_ret);
 		else {
 			printf("\t- memory %d dev. type and unique ID: ", i);

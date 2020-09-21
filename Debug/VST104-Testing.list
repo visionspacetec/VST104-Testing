@@ -2006,13 +2006,13 @@ int main(void)
  80013cc:	713b      	strb	r3, [r7, #4]
 
 	//loop thru memories
-	for(int i=3; i<6; i++) {
- 80013ce:	2303      	movs	r3, #3
+	for(int i=4; i<7; i++) {
+ 80013ce:	2304      	movs	r3, #4
  80013d0:	63bb      	str	r3, [r7, #56]	; 0x38
  80013d2:	e030      	b.n	8001436 <main+0x596>
-		SPI_ret = SPI_read_data(&hspi1, i-2, SPI_command, SPI_buff, 9);
+		SPI_ret = SPI_read_data(&hspi1, i-3, SPI_command, SPI_buff, 9);
  80013d4:	6bbb      	ldr	r3, [r7, #56]	; 0x38
- 80013d6:	1e99      	subs	r1, r3, #2
+ 80013d6:	1ed9      	subs	r1, r3, #3
  80013d8:	f107 0008 	add.w	r0, r7, #8
  80013dc:	1d3a      	adds	r2, r7, #4
  80013de:	2309      	movs	r3, #9
@@ -2055,12 +2055,12 @@ int main(void)
 			printf("\n");
  800142a:	200a      	movs	r0, #10
  800142c:	f006 fcaa 	bl	8007d84 <putchar>
-	for(int i=3; i<6; i++) {
+	for(int i=4; i<7; i++) {
  8001430:	6bbb      	ldr	r3, [r7, #56]	; 0x38
  8001432:	3301      	adds	r3, #1
  8001434:	63bb      	str	r3, [r7, #56]	; 0x38
  8001436:	6bbb      	ldr	r3, [r7, #56]	; 0x38
- 8001438:	2b05      	cmp	r3, #5
+ 8001438:	2b06      	cmp	r3, #6
  800143a:	ddcb      	ble.n	80013d4 <main+0x534>
 		}
 	}
