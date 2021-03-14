@@ -1,0 +1,13 @@
+/*
+ * testing_tools.h
+ *
+ *  Created on: Mar 13, 2021
+ *      Author: Filip Geib
+ */
+
+#ifndef INC_TESTING_TOOLS_H_
+#define INC_TESTING_TOOLS_H_
+#endif /* INC_TESTING_TOOLS_H_ */
+
+
+#include "stm32l4xx_hal.h"

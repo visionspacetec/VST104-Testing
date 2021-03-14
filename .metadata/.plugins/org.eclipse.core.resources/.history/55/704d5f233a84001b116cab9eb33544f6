@@ -1,0 +1,46 @@
+/*
+ * testing_functions.h
+ *
+ *  Created on: Mar 13, 2021
+ *      Author: Filip Geib
+ */
+
+#ifndef _TESTING_FUNCTIONS_
+#define _TESTING_FUNCTIONS_
+
+
+/* INCLUDES */
+
+#include <string.h>
+#include <stdio.h>
+
+#include "main.h"
+#include "stm32l4xx_hal.h"
+
+
+/* DEFINITIONS AND CONSTANTS */
+
+// MCP temperature and configuration registers
+#define MCP_REG_TEMP (0x05)
+#define MCP_REG_CONF (0x01)
+
+// MCP list of I2C addresses
+static const uint8_t MCP_add[] = {0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1E, 0x1F};
+
+
+/* CONFIGURATION FUNCTIONS */
+
+void temperature_config(I2C_HandleTypeDef *hi2c2, int MCP_id);
+
+
+/* FUNCTIONS */
+
+void temperature_read(I2C_HandleTypeDef *hi2c2, int MCP_id);
+
+int QSPI_read_data(QSPI_HandleTypeDef *hqspi, int device, uint8_t command, uint8_t *buff, int size);
+
+int SPI_read_data(SPI_HandleTypeDef *hspi, int device, uint8_t *command, uint8_t *buff, int size);
+
+
+#eINCLUDE_TESTING_FUNCTIONS_H_FUNCTIONS_H_ */
+

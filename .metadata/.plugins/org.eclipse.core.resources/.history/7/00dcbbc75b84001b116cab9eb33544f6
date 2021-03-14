@@ -1,0 +1,219 @@
+/*
+ * testing_functions.cpp
+ *
+ *  Created on: Mar 13, 2021
+ *      Author: Filip Geib
+ */
+
+
+#include "testing_functions.h"
+
+
+/* CONFIGURATION FUNCTIONS */
+
+	void temp_powerReset() {
+		HAL_GPIO_WritePin(I2C2_EN_GPIO_Port, I2C2_EN_Pin, GPIO_PIN_RESET);
+		HAL_Delay(200);
+		HAL_GPIO_WritePin(I2C2_EN_GPIO_Port, I2C2_EN_Pin, GPIO_PIN_SET);
+		HAL_Delay(100);
+
+		log_send(0, "temp_powerReset", -1, "NA", NAN);
+	}
+
+	void temp_configure(I2C_HandleTypeDef *handler, int device) {
+		// flags for thermostat mode and interrupt not used
+		uint8_t buff[2] = {0x00, 0x08};
+
+		// send configuration and check for outcome
+		HAL_StatusTypeDef ret = HAL_I2C_Mem_Write(handler, MCP_add[device] << 1, MCP_REG_CONF, 1, buff, 2, HAL_MAX_DELAY);
+		log_send(ret == HAL_OK ? 0 : 1, "temp_configure", device, "NA", NAN);
+}
+
+
+/* TOOLS */
+
+	void addr2str(uint8_t addr, int addr_len, char *str) {
+		int index = 0;
+		for(int i=0; i<addr_len; i++)
+		   index += sprintf(str[index], "%02X", addr[i]);
+	}
+
+
+
+/* CONTROL FUNCTIONS */
+
+	void log_send(int type, char *identity, int device, char *data_str, float data_flt) {
+		// process device
+		char device_str[8] = "NA";
+		if(device < 0) sprintf(device_str, "%d", device);
+
+
+		// send to SWD
+		printf("%s -i %s -d %s -s %s -f %f\n", LOG_types[type], identity, device_str, data_str, data_flt);
+	}
+
+	int flash_processCommand(QSPI_HandleTypeDef *handler, uint8_t command, uint8_t *buff, int size, int device) {
+		HAL_StatusTypeDef ret; QSPI_CommandTypeDef sCommand;
+
+		sCommand.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
+		sCommand.Instruction       = command;
+		sCommand.AddressMode       = QSPI_ADDRESS_NONE;
+		sCommand.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;	// OK
+		sCommand.DataMode          = QSPI_DATA_1_LINE;			// OK
+		sCommand.NbData            = size;
+		sCommand.DummyCycles       = 0;							// 8 : 1b left shift
+		sCommand.DdrMode           = QSPI_DDR_MODE_DISABLE;		// OK
+		sCommand.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
+		sCommand.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;	// OK
+
+		// set all devices
+		HAL_GPIO_WritePin(GPIOA, QSPI_CS1_Pin | QSPI_CS2_Pin , GPIO_PIN_SET);
+		HAL_GPIO_WritePin(QSPI_CS3_GPIO_Port, QSPI_CS3_Pin, GPIO_PIN_SET);
+		HAL_Delay(1);
+
+		// reset appropriate memory
+		if(device == 1) HAL_GPIO_WritePin(GPIOA, QSPI_CS1_Pin, GPIO_PIN_RESET);
+		else if(device ==2 ) HAL_GPIO_WritePin(GPIOA, QSPI_CS2_Pin, GPIO_PIN_RESET);
+		else HAL_GPIO_WritePin(QSPI_CS3_GPIO_Port, QSPI_CS3_Pin, GPIO_PIN_RESET);
+
+		// send command
+		int errNo = 0;
+		ret = HAL_QSPI_Command(handler, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE);
+		if(ret != HAL_OK) errNo = 1;
+
+		// receive answer
+		if(errNo == 0) {
+			ret = HAL_QSPI_Receive(handler, buff, HAL_QPSI_TIMEOUT_DEFAULT_VALUE);
+			if(ret != HAL_OK) errNo = 2;
+		}
+
+		// set all devices
+		HAL_GPIO_WritePin(GPIOA, QSPI_CS1_Pin | QSPI_CS2_Pin , GPIO_PIN_SET);
+		HAL_GPIO_WritePin(QSPI_CS3_GPIO_Port, QSPI_CS3_Pin, GPIO_PIN_SET);
+
+		return errNo;
+	}
+
+	int fram_processCommand(SPI_HandleTypeDef *handler, uint8_t *command, uint8_t *buff, int size, int device) {
+		HAL_StatusTypeDef ret;
+
+		// set all devices
+		HAL_GPIO_WritePin(GPIOC, SPI1_CS1_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOA, SPI1_CS2_Pin | SPI1_CS3_Pin, GPIO_PIN_SET);
+		HAL_Delay(1);
+
+		// reset appropriate memory
+		if(device == 1) HAL_GPIO_WritePin(GPIOC, SPI1_CS1_Pin, GPIO_PIN_RESET);
+		else if(device ==2 ) HAL_GPIO_WritePin(GPIOA, SPI1_CS2_Pin, GPIO_PIN_RESET);
+		else HAL_GPIO_WritePin(GPIOA, SPI1_CS3_Pin, GPIO_PIN_RESET);
+
+		// send command
+		int errNo = 0;
+		ret = HAL_SPI_Transmit(handler, command, 1, 100);
+		if(ret != HAL_OK) errNo = 1;
+
+		// receive answer
+		if(errNo == 0) {
+			ret = HAL_SPI_Receive(handler, buff, size, 100);
+			if(ret != HAL_OK) errNo = 2;
+		}
+
+		//set all devices
+		HAL_GPIO_WritePin(GPIOC, SPI1_CS1_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOA, SPI1_CS2_Pin | SPI1_CS3_Pin, GPIO_PIN_SET);
+
+		return errNo;
+}
+
+
+/* TESTING FUNCTIONS */
+
+	void curr_readData(ADC_HandleTypeDef *handler, int device) {
+		//start ADC conversion
+		HAL_ADC_Start(handler);
+
+		//poll ADC peripheral
+		HAL_ADC_PollForConversion(handler, 1);
+
+		//read ADC conversion result
+		uint16_t raw_value = HAL_ADC_GetValue(handler);
+
+		//stop ADC conversion
+		HAL_ADC_Stop(handler);
+
+		//compute current consumption from ADC values in [mA]
+		float value = (3000 * (float)VREFINT_CAL / (float)raw_value) / 1000;
+		value = (value - CUR_IOS * CUR_RMON) / (CUR_GAIN * CUR_RMON);
+
+		log_send(2, "curr_readData", device, "NA", value);
+	}
+
+	void temp_readData(I2C_HandleTypeDef *handler, int device) {
+		// flags requesting Ta data
+		uint8_t buff[2] = {0x00, 0x00};
+
+		// send request
+		HAL_StatusTypeDef ret = HAL_I2C_Mem_Write(handler, MCP_add[device] << 1, MCP_REG_TEMP, 1, buff, 2, HAL_MAX_DELAY);
+		if(ret != HAL_OK) log_send(1, "temp_readData", device, "NA", 1);
+
+		// read requested Ta data
+		ret = HAL_I2C_Mem_Read(handler, MCP_add[device] << 1, MCP_REG_TEMP, 1, buff, 2, HAL_MAX_DELAY);
+		if(ret != HAL_OK) log_send(1, "temp_readData", device, "NA", 2);
+
+		// clear flag byte
+		if(buff[0] & 0xE0)
+			buff[0] = buff[0] & 0x1F;
+
+		// convert Ta value to degC temperature
+		float value;
+		if((buff[0] & 0x10) == 0x10){
+			buff[0] = buff[0] & 0x0F;
+			value = (256 - (buff[0] << 4) + (buff[1] >> 4)) * -1;
+		}
+		else
+			value = (float)buff[0] * 16 + (float)buff[1] / 16;
+
+		// print results
+		log_send(2, "temp_readData", device, "NA", value);
+	}
+
+	void flash_manufacData(QSPI_HandleTypeDef *handler, int device) {
+		// prepare variables
+		int ret; uint8_t buff[8];
+
+		// request and read manufacturer device type
+		ret = flash_processCommand(handler, 0x9F, buff, 3, device);
+		if(ret != 0) log_send(1, "flash_manufacData", device, "device_type", ret);
+		else {
+			char tmp[7];
+			addr2str(buff, 3, tmp);
+			log_send(2, "flash_manufacData", device, tmp, 0);
+		}
+
+		// request and read unique device ID
+		ret = flash_processCommand(handler, 0x4B, buff, 8, device);
+		if(ret != 0) log_send(1, "flash_manufacData", device, "device_id", ret);
+		else {
+			printf("\t- memory %d unique ID: ", device);
+			for(int i=0; i<8; i++) printf("0x%02X ", buff[i]);
+			printf("\n");
+		}
+	}
+
+
+	void fram_manufacData(SPI_HandleTypeDef *handler, int device) {
+		// prepare variables
+		int ret; uint8_t buff[9]; uint8_t command[] = {0x9F};
+
+		// request and read manufacturer device type
+		ret = fram_processCommand(handler, command, buff, 9, device);
+		if(ret != 0) log_send(1, "fram_manufacData", device, "NA", ret);
+		else {
+			printf("\t- memory %d dev. type and unique ID: ", device);
+			for(int i=0; i<9; i++) printf("0x%02X ", buff[i]);
+			printf("\n");
+		}
+
+	}
+
+

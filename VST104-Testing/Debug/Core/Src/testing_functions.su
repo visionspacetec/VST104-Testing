@@ -1,0 +1,10 @@
+testing_functions.c:14:7:temp_powerReset	8	static
+testing_functions.c:23:7:temp_configure	40	static
+testing_functions.c:35:7:addr2str	32	static
+testing_functions.c:45:7:log_send	64	static
+testing_functions.c:55:6:flash_processCommand	88	static
+testing_functions.c:97:6:fram_processCommand	32	static
+testing_functions.c:131:7:curr_readData	24	static
+testing_functions.c:151:7:temp_readData	40	static
+testing_functions.c:180:7:flash_manufacData	64	static
+testing_functions.c:204:7:fram_manufacData	64	static

@@ -1,0 +1,76 @@
+/*
+ * testing_functions.cpp
+ *
+ *  Created on: Mar 13, 2021
+ *      Author: Filip Geib
+ */
+
+
+//
+int QSPI_read_data(QSPI_HandleTypeDef *hqspi, int device, uint8_t command, uint8_t *buff, int size){
+	HAL_StatusTypeDef ret;
+	QSPI_CommandTypeDef sCommand;
+
+	sCommand.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
+	sCommand.Instruction       = command;
+	sCommand.AddressMode       = QSPI_ADDRESS_NONE;
+	sCommand.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;	//OK
+	sCommand.DataMode          = QSPI_DATA_1_LINE;			//OK
+	sCommand.NbData            = size;
+	sCommand.DummyCycles       = 0;							//when 8 then 1 bit left shift
+	sCommand.DdrMode           = QSPI_DDR_MODE_DISABLE;		//OK
+	sCommand.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
+	sCommand.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;	//OK
+
+	//reset all devices
+	HAL_GPIO_WritePin(GPIOA, QSPI_CS1_Pin | QSPI_CS2_Pin , GPIO_PIN_SET);
+	HAL_GPIO_WritePin(QSPI_CS3_GPIO_Port, QSPI_CS3_Pin, GPIO_PIN_SET);
+	HAL_Delay(1);
+
+	//select appropriate memory
+	if(device == 1) HAL_GPIO_WritePin(GPIOA, QSPI_CS1_Pin, GPIO_PIN_RESET);
+	else if(device ==2 ) HAL_GPIO_WritePin(GPIOA, QSPI_CS2_Pin, GPIO_PIN_RESET);
+	else HAL_GPIO_WritePin(QSPI_CS3_GPIO_Port, QSPI_CS3_Pin, GPIO_PIN_RESET);
+
+	//send command
+	ret = HAL_QSPI_Command(hqspi, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE);
+	if(ret != HAL_OK) return 1;
+
+	//receive answer
+	ret = HAL_QSPI_Receive(hqspi, buff, HAL_QPSI_TIMEOUT_DEFAULT_VALUE);
+	if(ret != HAL_OK) return 2;
+
+	//power off all devices
+	HAL_GPIO_WritePin(GPIOA, QSPI_CS1_Pin | QSPI_CS2_Pin , GPIO_PIN_SET);
+	HAL_GPIO_WritePin(QSPI_CS3_GPIO_Port, QSPI_CS3_Pin, GPIO_PIN_SET);
+
+	return 0;
+}
+
+//
+int SPI_read_data(SPI_HandleTypeDef *hspi, int device, uint8_t *command, uint8_t *buff, int size){
+	HAL_StatusTypeDef ret;
+
+	//reset all devices
+	HAL_GPIO_WritePin(GPIOC, SPI1_CS1_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS2_Pin | SPI1_CS3_Pin, GPIO_PIN_SET);
+	HAL_Delay(1);
+
+	//select appropriate memory
+	if(device == 1) HAL_GPIO_WritePin(GPIOC, SPI1_CS1_Pin, GPIO_PIN_RESET);
+	else if(device ==2 ) HAL_GPIO_WritePin(GPIOA, SPI1_CS2_Pin, GPIO_PIN_RESET);
+	else HAL_GPIO_WritePin(GPIOA, SPI1_CS3_Pin, GPIO_PIN_RESET);
+
+	ret = HAL_SPI_Transmit(hspi, command, 1, 100);
+	if(ret != HAL_OK) return 1;
+
+	ret = HAL_SPI_Receive(hspi, buff, size, 100);
+	if(ret != HAL_OK) return 2;
+
+	//power off all devices
+	HAL_GPIO_WritePin(GPIOC, SPI1_CS1_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS2_Pin | SPI1_CS3_Pin, GPIO_PIN_SET);
+
+	return 0;
+}
+

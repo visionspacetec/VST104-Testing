@@ -1,0 +1,18 @@
+/*
+ * testing_functions.h
+ *
+ *  Created on: Mar 13, 2021
+ *      Author: Filip Geib
+ */
+
+#ifndef INC_TESTING_FUNCTIONS_H_
+#define INC_TESTING_FUNCTIONS_H_
+#endif /* INC_TESTING_FUNCTIONS_H_ */
+
+
+void temperature_read_data(int MCP_id);
+
+int QSPI_read_data(QSPI_HandleTypeDef *hqspi, int device, uint8_t command, uint8_t *buff, int size);
+
+int SPI_read_data(SPI_HandleTypeDef *hspi, int device, uint8_t *command, uint8_t *buff, int size);
+

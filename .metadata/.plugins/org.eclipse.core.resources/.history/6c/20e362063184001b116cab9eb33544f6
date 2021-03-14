@@ -1,0 +1,30 @@
+/*
+ * testing_functions.h
+ *
+ *  Created on: Mar 13, 2021
+ *      Author: Filip Geib
+ */
+
+#ifndef INC_TESTING_FUNCTIONS_H_
+#define INC_TESTING_FUNCTIONS_H_
+#endif /* INC_TESTING_FUNCTIONS_H_ */
+
+/* CONSTANTS */
+
+//list of MCP sensors I2C addresses
+static const uint8_t MCP_add[] = {0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1E, 0x1F};
+
+
+/* CONFIGURATION FUNCTIONS */
+
+void temperature_config(int MCP_id);
+
+
+/* FUNCTIONS */
+
+void temperature_read(int MCP_id);
+
+int QSPI_read_data(QSPI_HandleTypeDef *hqspi, int device, uint8_t command, uint8_t *buff, int size);
+
+int SPI_read_data(SPI_HandleTypeDef *hspi, int device, uint8_t *command, uint8_t *buff, int size);
+

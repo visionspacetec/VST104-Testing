@@ -1,0 +1,4 @@
+testing_functions.cpp:11:6:void temperature_config(I2C_HandleTypeDef*, int)	32	static
+testing_functions.cpp:22:6:void temperature_read(I2C_HandleTypeDef*, int)	48	static
+testing_functions.cpp:52:5:int QSPI_read_data(QSPI_HandleTypeDef*, int, uint8_t, uint8_t*, int)	80	static
+testing_functions.cpp:93:5:int SPI_read_data(SPI_HandleTypeDef*, int, uint8_t*, uint8_t*, int)	24	static

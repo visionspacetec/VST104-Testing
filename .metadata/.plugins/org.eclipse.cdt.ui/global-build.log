@@ -1,0 +1,14 @@
+01:53:15 **** Build of configuration Debug for project VST104-Testing ****
+make -j8 all 
+arm-none-eabi-size   VST104-Testing.elf 
+   text	   data	    bss	    dec	    hex	filename
+  51980	    488	   2144	  54612	   d554	VST104-Testing.elf
+Finished building: default.size.stdout
+ 
+01:53:19 **** Incremental Build of configuration Debug for project VST104-Testing ****
+make -j8 all 
+arm-none-eabi-size   VST104-Testing.elf 
+   text	   data	    bss	    dec	    hex	filename
+  51980	    488	   2144	  54612	   d554	VST104-Testing.elf
+Finished building: default.size.stdout
+ 
