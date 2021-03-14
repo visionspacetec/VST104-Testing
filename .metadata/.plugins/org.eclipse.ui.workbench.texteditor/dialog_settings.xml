@@ -3,28 +3,36 @@
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="true"/>
-		<item key="wholeword" value="true"/>
+		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
-		<item key="selection" value="&quot;na&quot;"/>
+		<item key="selection" value="ADDR"/>
 		<list key="findhistory">
+			<item value="MCP_add"/>
+			<item value="device"/>
+			<item value="handler"/>
+			<item value="tmpRev"/>
+			<item value="tmpManu"/>
+			<item value="tmp1"/>
+			<item value="valTemp"/>
+			<item value="valMag"/>
+			<item value="#define"/>
+			<item value="MCP_REG_TEMP"/>
+			<item value="I2C3_EN"/>
+			<item value="I2C2_EN"/>
+			<item value="I2C3"/>
 			<item value="&quot;NA&quot;"/>
 			<item value="hi2c2"/>
-			<item value="hqspi"/>
-			<item value="hspi"/>
-			<item value="hadc"/>
-			<item value="hi2c"/>
-			<item value="handler"/>
-			<item value="SPI_buff"/>
-			<item value="SPI_ret"/>
-			<item value="SPI_command"/>
-			<item value="ret"/>
-			<item value="MCP_ret"/>
-			<item value="MCP_temp"/>
-			<item value="MCP_buff"/>
-			<item value="QSPI_buff"/>
 		</list>
 		<list key="replacehistory">
+			<item value="ADDR"/>
+			<item value="dev"/>
+			<item value="hand"/>
+			<item value="tmp"/>
+			<item value="tmpManu"/>
+			<item value="val"/>
+			<item value="valTmp"/>
+			<item value="static uint8_t"/>
 			<item value="&quot;na&quot;"/>
 			<item value="handler"/>
 			<item value=""/>
@@ -32,14 +40,11 @@
 			<item value="ret"/>
 			<item value="command"/>
 			<item value="value"/>
-			<item value="device"/>
-			<item value="flash_id"/>
-			<item value="MCP_id"/>
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
-		<item key="DIALOG_X_ORIGIN" value="1182"/>
-		<item key="DIALOG_Y_ORIGIN" value="184"/>
+		<item key="DIALOG_X_ORIGIN" value="1099"/>
+		<item key="DIALOG_Y_ORIGIN" value="445"/>
 		<item key="DIALOG_WIDTH" value="351"/>
 		<item key="DIALOG_HEIGHT" value="455"/>
 		<item key="DIALOG_FONT_NAME" value="1|Noto Sans|11.0|0|GTK|1|"/>

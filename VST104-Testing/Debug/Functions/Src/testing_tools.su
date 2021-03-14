@@ -1,0 +1,3 @@
+testing_tools.c:18:6:addr2str	32	static
+testing_tools.c:25:6:scanI2Caddr	24	static
+testing_tools.c:39:6:log_send	64	static

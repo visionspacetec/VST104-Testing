@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;VST104-Testing/Functions/Inc/MCP9804.h&apos; to &apos;mcp9804.h&apos;" description="Rename resource &apos;MCP9804.h&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="Functions/Inc/MCP9804.h" name="mcp9804.h" stamp="1615755389128" updateReferences="false"/>
+</session>

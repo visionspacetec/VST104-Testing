@@ -1,0 +1,6 @@
+mmc5883.c:49:6:mmc5883_powerReset	8	static
+mmc5883.c:59:5:mmc5883_waitMeasure	48	static
+mmc5883.c:87:6:mmc5883_configure	40	static
+mmc5883.c:103:6:mmc5883_readManufac	40	static
+mmc5883.c:117:6:mmc5883_readTempData	48	static
+mmc5883.c:140:6:mmc5883_readMagData	96	static

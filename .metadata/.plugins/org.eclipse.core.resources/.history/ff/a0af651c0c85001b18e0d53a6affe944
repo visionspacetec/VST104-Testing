@@ -1,0 +1,92 @@
+/*
+ *	Author: Filip Geib
+ *	(c) 2021
+ */
+
+
+#include "mcp9804.h"
+
+
+/* DEFINITIONS AND CONSTANTS */
+
+// MCP9804 list of I2C addresses
+const uint8_t ADDR[] = {0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1E, 0x1F};
+
+// MCP9804 significant registers
+#define REG_CONF	0x01
+#define REG_TEMP	0x05
+#define REG_ID		0x06
+#define REG_REV		0x07
+#define REG_RES		0x08
+
+// MCP9804 significant commands
+
+
+/* SUPPORT FUNCTIONS */
+
+void mcp9804_powerReset() {
+	HAL_GPIO_WritePin(I2C2_EN_GPIO_Port, I2C2_EN_Pin, GPIO_PIN_RESET);
+	HAL_Delay(200);
+	HAL_GPIO_WritePin(I2C2_EN_GPIO_Port, I2C2_EN_Pin, GPIO_PIN_SET);
+	HAL_Delay(100);
+
+	log_send(0, "mcp9804_powerReset", -1, "na", NAN);
+}
+
+
+/* MAIN FUNCTIONS */
+
+
+/*void mcp9804_configure(I2C_HandleTypeDef *hand, int dev) {
+	// flags for thermostat mode and interrupt not used
+	uint8_t buff[2] = {0x00, 0x08};
+
+	// send configuration and check for outcome
+	HAL_StatusTypeDef ret = HAL_I2C_Mem_Write(hand, ADDR[dev] << 1, REG_CONF, 1, buff, 2, HAL_MAX_DELAY);
+	log_send(ret == HAL_OK ? 0 : 1, "temp_configure", dev, "na", NAN);
+}*/
+
+
+void mcp9884_readManufac(I2C_HandleTypeDef *hand, int dev) {
+	HAL_StatusTypeDef ret; uint8_t buff;
+
+	// read manufacturer ID register
+	ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_ID, 1, &buff, 1, HAL_MAX_DELAY);
+	if(ret != HAL_OK) log_send(1, "mmc5883_readManufac", dev, "na", 2);
+
+	// convert address to string
+	char tmp[2];
+	addr2str(&buff, 1, tmp);
+	log_send(2, "mmc5883_readManufac", dev, tmp, NAN);
+
+}
+
+/*void temp_readData(I2C_HandleTypeDef *handler, int device) {
+	// flags requesting Ta data
+	uint8_t buff[2] = {0x00, 0x00};
+
+	// send request
+	HAL_StatusTypeDef ret = HAL_I2C_Mem_Write(handler, MCP_add[device] << 1, MCP_REG_TEMP, 1, buff, 2, HAL_MAX_DELAY);
+	if(ret != HAL_OK) log_send(1, "temp_readData", device, "na", 1);
+
+	// read requested Ta data
+	ret = HAL_I2C_Mem_Read(handler, MCP_add[device] << 1, MCP_REG_TEMP, 1, buff, 2, HAL_MAX_DELAY);
+	if(ret != HAL_OK) log_send(1, "temp_readData", device, "na", 2);
+
+	// clear flag byte
+	if(buff[0] & 0xE0)
+		buff[0] = buff[0] & 0x1F;
+
+	// convert Ta value to degC temperature
+	float value;
+	if((buff[0] & 0x10) == 0x10){
+		buff[0] = buff[0] & 0x0F;
+		value = (256 - (buff[0] << 4) + (buff[1] >> 4)) * -1;
+	}
+	else
+		value = (float)buff[0] * 16 + (float)buff[1] / 16;
+
+	log_send(2, "temp_readData", device, "na", value);
+}*/
+
+

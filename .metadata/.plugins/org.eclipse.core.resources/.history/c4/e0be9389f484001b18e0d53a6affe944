@@ -1,0 +1,139 @@
+/*
+ * mmc5883.c
+ *
+ *  Created on: Mar 14, 2021
+ *      Author: Filip Geib
+ */
+
+
+#include "mmc5883.h"
+
+/* DEFINITIONS AND CONSTANTS */
+
+// MMC5883 list of I2C addresses
+static const uint8_t ADDR[] = {0x30};
+
+// measurement maximal timeout (in ms)
+#define TIMEOUT		200
+
+// MMC5883 registers
+#define REG_STAT	0x07
+#define REG_CTRL0	0x08
+#define REG_CTRL1	0x09
+#define REG_CTRL2	0x0A
+
+#define REG_DATA	0x00
+#define REG_TEMP	0x06
+#define	REG_ID		0x2F
+
+// MMC5883 significant commands
+#define CMD_TM_M	0x01
+#define CMD_TM_T	0x02
+#define CMD_MD_M	0x01
+#define CMD_MD_T	0x01
+
+#define CMD_SET		0x08
+#define CMD_RST		0x10
+
+#define CMD_100HZ	0x00
+#define CMD_200HZ	0x01
+#define CMD_400HZ	0x02
+#define CMD_600HZ	0x03
+
+#define CMD_SW_RST	0x80
+
+
+/* SUPPORT FUNCTIONS */
+
+void mmc5883_powerReset() {
+	HAL_GPIO_WritePin(I2C3_EN_GPIO_Port, I2C3_EN_Pin, GPIO_PIN_RESET);
+	HAL_Delay(200);
+	HAL_GPIO_WritePin(I2C3_EN_GPIO_Port, I2C3_EN_Pin, GPIO_PIN_SET);
+	HAL_Delay(100);
+
+	log_send(0, "mmc5883_powerReset", -1, "na", NAN);
+}
+
+
+int mmc5883_waitMeasure(I2C_HandleTypeDef *hand, bool type, int dev) {
+	unsigned char buff; HAL_StatusTypeDef ret;
+
+	// variable for time management
+	int cnt = 0;
+
+	// periodically check status register
+	while(cnt*10 < TIMEOUT) {
+		// read status register
+		ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_STAT, 1, &buff, 1, HAL_MAX_DELAY);
+		if(ret != HAL_OK) log_send(1, "mmc5883_waitMeasure", dev, "na", 1);
+
+		// check buffer (0:mag, 1:temp)
+		if(!dev && (buff & (1 << CMD_MD_M))) return 0;
+		else if(dev && (buff & (1 << CMD_MD_T))) return 0;
+
+		// wait 10ms and increase counter
+		HAL_Delay(10);
+		cnt++;
+	}
+
+	// timeout error
+	return -1;
+}
+
+
+/* MAIN FUNCTIONS */
+
+void mmc5883_configure(I2C_HandleTypeDef *hand, int dev) {
+	HAL_StatusTypeDef ret;
+
+	// reset device - clear registers (5ms power on)
+	ret = HAL_I2C_Mem_Write(hand, ADDR[dev] << 1, REG_CTRL1, 1, (uint8_t *)CMD_SW_RST, 1, HAL_MAX_DELAY);
+	if(ret != HAL_OK) log_send(1, "mmc5883_config", dev, "na", 1);
+	HAL_Delay(100);
+
+	// set output resolution
+	ret = HAL_I2C_Mem_Write(hand, ADDR[dev] << 1, REG_CTRL1, 1, (uint8_t *)CMD_100HZ, 1, HAL_MAX_DELAY);
+	if(ret != HAL_OK) log_send(1, "mmc5883_config", dev, "na", 2);
+
+	log_send(0, "mmc5883_config", dev, "na", NAN);
+}
+
+
+void mmc5883_readManufac(I2C_HandleTypeDef *hand, int dev) {
+	unsigned char buff; HAL_StatusTypeDef ret;
+
+	// read product ID register
+	ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_ID, 1, &buff, 1, HAL_MAX_DELAY);
+	if(ret != HAL_OK) log_send(1, "mmc5883_readData", dev, "na", 2);
+
+	// convert address to string
+	char tmp[2];
+	addr2str(&buff, 1, tmp);
+	log_send(2, "mmc5883_readManufac", dev, tmp, NAN);
+}
+
+
+void mmc5883_readData(I2C_HandleTypeDef *hand, int dev) {
+	uint8_t buff[7]; HAL_StatusTypeDef ret; int waitRet;
+
+	// initiate temperature measurement
+	ret = HAL_I2C_Mem_Write(hand, ADDR[dev] << 1, REG_CTRL0, 1, (uint8_t *)CMD_TM_M, 1, HAL_MAX_DELAY);
+	if(ret != HAL_OK) log_send(1, "mmc5883_readData", dev, "na", 1);
+
+	// wait for measurement to complete
+	waitRet = mmc5883_waitMeasure(hand, 1, dev);
+	if(waitRet != 0) log_send(1, "mmc5883_readData", dev, "na", 2);
+
+	// process temperature data
+	else {
+		// read temperature register
+		ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_TEMP, 1, buff, 1, HAL_MAX_DELAY);
+		if(ret != HAL_OK) log_send(1, "mmc5883_readData", dev, "na", 3);
+
+		// process temperature value
+		float valTemp = -75.0 + 0.7*buff[0];
+
+		log_send(2, "mmc5883_readData", dev, "temperature", valTemp);
+	}
+
+}

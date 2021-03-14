@@ -1,0 +1,4 @@
+mcp9804.c:27:6:mcp9804_powerReset	8	static
+mcp9804.c:39:6:mcp9804_configure	16	static
+mcp9804.c:47:6:mcp9884_readManufac	48	static
+mcp9804.c:73:6:mcp9884_readData	40	static

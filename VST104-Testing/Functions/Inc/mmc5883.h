@@ -1,0 +1,41 @@
+/*
+ *	Author: Filip Geib
+ *	(c) 2021
+ */
+
+#ifndef _MMC5883_H_
+#define _MMC5883_H_
+
+
+/* INCLUDES */
+
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+#include <math.h>
+
+#include "main.h"
+#include "stm32l4xx_hal.h"
+
+#include "testing_tools.h"
+
+
+/* SUPPORT FUNCTIONS */
+
+void mmc5883_powerReset(void);
+
+int mmc5883_waitMeasure(I2C_HandleTypeDef *hand, bool type, int dev);
+
+
+/* MAIN FUNCTIONS */
+
+void mmc5883_configure(I2C_HandleTypeDef *hand, int dev);
+
+void mmc5883_readManufac(I2C_HandleTypeDef *hand, int dev);
+
+void mmc5883_readTempData(I2C_HandleTypeDef *hand, int dev);
+
+void mmc5883_readMagData(I2C_HandleTypeDef *hand, int dev);
+
+
+#endif /* _MMC5883_H_ */

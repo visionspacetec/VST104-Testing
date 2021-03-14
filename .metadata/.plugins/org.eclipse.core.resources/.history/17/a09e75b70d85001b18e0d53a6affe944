@@ -1,0 +1,31 @@
+/*
+ *	Author: Filip Geib
+ *	(c) 2021
+ */
+
+#ifndef _MCP9804_H_
+#define _MCP9804_H_
+
+
+/* INCLUDES */
+
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+#include <math.h>
+
+#include "main.h"
+#include "stm32l4xx_hal.h"
+
+#include "testing_tools.h"
+
+
+/* SUPPORT FUNCTIONS */
+
+
+
+/* MAIN FUNCTIONS */
+
+
+
+#endif /* _MCP9804_H_ */

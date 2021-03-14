@@ -11,46 +11,8 @@
 
 /* CONFIGURATION FUNCTIONS */
 
-	void temp_powerReset() {
-		HAL_GPIO_WritePin(I2C2_EN_GPIO_Port, I2C2_EN_Pin, GPIO_PIN_RESET);
-		HAL_Delay(200);
-		HAL_GPIO_WritePin(I2C2_EN_GPIO_Port, I2C2_EN_Pin, GPIO_PIN_SET);
-		HAL_Delay(100);
-
-		log_send(0, "temp_powerReset", -1, "na", NAN);
-	}
-
-	void temp_configure(I2C_HandleTypeDef *handler, int device) {
-		// flags for thermostat mode and interrupt not used
-		uint8_t buff[2] = {0x00, 0x08};
-
-		// send configuration and check for outcome
-		HAL_StatusTypeDef ret = HAL_I2C_Mem_Write(handler, MCP_add[device] << 1, MCP_REG_CONF, 1, buff, 2, HAL_MAX_DELAY);
-		log_send(ret == HAL_OK ? 0 : 1, "temp_configure", device, "na", NAN);
-}
-
-
-/* TOOLS */
-
-	void addr2str(uint8_t *addr, int addr_len, char *str) {
-		int index = 0;
-		for(int i=0; i<addr_len; i++)
-		   index += sprintf(&str[index], "%02X", addr[i]);
-	}
-
-
 
 /* CONTROL FUNCTIONS */
-
-	void log_send(int type, char *identity, int device, char *data_str, float data_flt) {
-		// process device
-		char device_str[8] = "na";
-		if(device >= 0) sprintf(device_str, "%d", device);
-
-
-		// send to SWD
-		printf("%s -i %s -d %s -s %s -f %f\n", LOG_types[type], identity, device_str, data_str, data_flt);
-	}
 
 	int flash_processCommand(QSPI_HandleTypeDef *handler, uint8_t command, uint8_t *buff, int size, int device) {
 		HAL_StatusTypeDef ret; QSPI_CommandTypeDef sCommand;
@@ -123,7 +85,7 @@
 		HAL_GPIO_WritePin(GPIOA, SPI1_CS2_Pin | SPI1_CS3_Pin, GPIO_PIN_SET);
 
 		return errNo;
-}
+	}
 
 
 /* TESTING FUNCTIONS */
@@ -148,34 +110,6 @@
 		log_send(2, "curr_readData", device, "na", value);
 	}
 
-	void temp_readData(I2C_HandleTypeDef *handler, int device) {
-		// flags requesting Ta data
-		uint8_t buff[2] = {0x00, 0x00};
-
-		// send request
-		HAL_StatusTypeDef ret = HAL_I2C_Mem_Write(handler, MCP_add[device] << 1, MCP_REG_TEMP, 1, buff, 2, HAL_MAX_DELAY);
-		if(ret != HAL_OK) log_send(1, "temp_readData", device, "na", 1);
-
-		// read requested Ta data
-		ret = HAL_I2C_Mem_Read(handler, MCP_add[device] << 1, MCP_REG_TEMP, 1, buff, 2, HAL_MAX_DELAY);
-		if(ret != HAL_OK) log_send(1, "temp_readData", device, "na", 2);
-
-		// clear flag byte
-		if(buff[0] & 0xE0)
-			buff[0] = buff[0] & 0x1F;
-
-		// convert Ta value to degC temperature
-		float value;
-		if((buff[0] & 0x10) == 0x10){
-			buff[0] = buff[0] & 0x0F;
-			value = (256 - (buff[0] << 4) + (buff[1] >> 4)) * -1;
-		}
-		else
-			value = (float)buff[0] * 16 + (float)buff[1] / 16;
-
-		// print results
-		log_send(2, "temp_readData", device, "na", value);
-	}
 
 	void flash_manufacData(QSPI_HandleTypeDef *handler, int device) {
 		// prepare variables
@@ -199,7 +133,6 @@
 			log_send(2, "flash_manufacData->type", device, tmp, NAN);
 		}
 	}
-
 
 	void fram_manufacData(SPI_HandleTypeDef *handler, int device) {
 		// prepare variables

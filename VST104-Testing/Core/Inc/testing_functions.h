@@ -18,15 +18,10 @@
 	#include "main.h"
 	#include "stm32l4xx_hal.h"
 
+	#include "testing_tools.h"
+
 
 /* DEFINITIONS AND CONSTANTS */
-
-	// MCP temperature and configuration registers
-	#define MCP_REG_TEMP (0x05)
-	#define MCP_REG_CONF (0x01)
-
-	// MCP list of I2C addresses
-	static const uint8_t MCP_add[] = {0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1E, 0x1F};
 
 	// MCU ADC calibration
 	#define VREFINT_CAL *((uint16_t*) ((uint32_t) 0x1FFF75AA)) //calibrated at 3.3V +-10mV   @ 30C +/- 5C
@@ -36,14 +31,6 @@
 	#define CUR_IOS 0.0000008 //E-Fuse data-sheet
 	#define CUR_RMON 75000.0  //schematic
 
-	// LOG classes abbreviations
-	static const char LOG_types[3][4] = {"INF", "ERR", "DAT"};
-
-
-/* TOOLS */
-
-	void addr2str(uint8_t *addr, int addr_len, char *str);
-
 
 /* CONFIGURATION FUNCTIONS */
 
@@ -51,10 +38,10 @@
 
 	void temp_configure(I2C_HandleTypeDef *handler, int MCP_id);
 
+	void magneto_powerReset(void);
+
 
 /* CONTROL FUNCTIONS */
-
-	void log_send(int type, char *identity, int device, char *data_str, float data_flt);
 
 	int flash_processCommand(QSPI_HandleTypeDef *handler, uint8_t command, uint8_t *buff, int size, int device);
 
