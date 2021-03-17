@@ -11,12 +11,12 @@
 
 /* INCLUDES */
 
-	#include <stdio.h>
-	#include <string.h>
-	#include <math.h>
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
 
-	#include "main.h"
-	#include "stm32l4xx_hal.h"
+#include "main.h"
+#include "stm32l4xx_hal.h"
 
 
 /* FUNCTIONS */
@@ -24,6 +24,8 @@
 void addr2str(uint8_t *addr, int addr_len, char *str);
 
 void scanI2Caddr(I2C_HandleTypeDef *handler);
+
+void assign_huartPtr(UART_HandleTypeDef* hand1, UART_HandleTypeDef* hand2);
 
 void log_send(int type, char *identity, int device, char *data_str, float data_flt);
 

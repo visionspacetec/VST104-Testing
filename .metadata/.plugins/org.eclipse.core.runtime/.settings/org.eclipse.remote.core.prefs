@@ -1,0 +1,16 @@
+connections/org.eclipse.remote.serial.core.connectionType/UART1_log/serial.baudRate=11
+connections/org.eclipse.remote.serial.core.connectionType/UART1_log/serial.byteSize=2
+connections/org.eclipse.remote.serial.core.connectionType/UART1_log/serial.parity=1
+connections/org.eclipse.remote.serial.core.connectionType/UART1_log/serial.portName=/dev/ttyACM0
+connections/org.eclipse.remote.serial.core.connectionType/UART1_log/serial.stopBits=0
+connections/org.eclipse.remote.serial.core.connectionType/UARTT1_log/serial.baudRate=11
+connections/org.eclipse.remote.serial.core.connectionType/UARTT1_log/serial.byteSize=2
+connections/org.eclipse.remote.serial.core.connectionType/UARTT1_log/serial.parity=1
+connections/org.eclipse.remote.serial.core.connectionType/UARTT1_log/serial.portName=/dev/ttyACM1
+connections/org.eclipse.remote.serial.core.connectionType/UARTT1_log/serial.stopBits=0
+connections/org.eclipse.remote.serial.core.connectionType/test/serial.baudRate=11
+connections/org.eclipse.remote.serial.core.connectionType/test/serial.byteSize=2
+connections/org.eclipse.remote.serial.core.connectionType/test/serial.parity=1
+connections/org.eclipse.remote.serial.core.connectionType/test/serial.portName=/dev/ttyUSB0
+connections/org.eclipse.remote.serial.core.connectionType/test/serial.stopBits=0
+eclipse.preferences.version=1

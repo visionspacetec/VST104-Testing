@@ -7,6 +7,11 @@
 
 #include "testing_tools.h"
 
+
+/* VARIABLES */
+
+UART_HandleTypeDef* huartPtrs[2];
+
 /* DEFINITIONS AND CONSTANTS */
 
 // LOG classes abbreviations
@@ -28,11 +33,17 @@ void scanI2Caddr(I2C_HandleTypeDef *handler) {
 
 	// check all possible addresses
 	for(int i=1; i<128; i++) {
-	  result = HAL_I2C_IsDeviceReady(handler, (uint16_t)(i<<1), 2, 2);
+	  result = HAL_I2C_IsDeviceReady(handler, (uint16_t)(i<<1), 2, 10);
 	  if (result == HAL_OK)
 		  printf("0x%02X\n", i);
 	}
 	printf("Scanning completed\n");
+}
+
+
+void assign_huartPtr(UART_HandleTypeDef* hand1, UART_HandleTypeDef* hand2) {
+	huartPtrs[0] = hand1;
+	huartPtrs[1] = hand2;
 }
 
 
@@ -41,6 +52,17 @@ void log_send(int type, char *identity, int device, char *data_str, float data_f
 	char device_str[8] = "na";
 	if(device >= 0) sprintf(device_str, "%d", device);
 
+	// generate message string
+	char msg[256];
+	sprintf(msg, "%s -i %s -d %s -s %s -f %f\n", LOG_types[type], identity, device_str, data_str, data_flt);
+
 	// send to SWD
-	printf("%s -i %s -d %s -s %s -f %f\n", LOG_types[type], identity, device_str, data_str, data_flt);
+	printf("%s", msg);
+
+	// send to UARTs
+	for(int i=0; i<2; i++) {
+		if(HAL_UART_Transmit(huartPtrs[i], (uint8_t *)msg, strlen(msg)+1, UART_TIMEOUT) != HAL_OK)
+			printf("#### UART-%d ERROR ####\n", i+1);
+	}
 }
+

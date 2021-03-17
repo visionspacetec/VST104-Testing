@@ -1,0 +1,40 @@
+/*
+ *	Author: Filip Geib
+ *	(c) 2021
+ */
+
+#ifndef _LSM6DS3_H_
+#define _LSM6DS3_H_
+
+
+/* INCLUDES */
+
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+#include <math.h>
+
+#include "main.h"
+#include "stm32l4xx_hal.h"
+
+#include "testing_tools.h"
+
+
+/* SUPPORT FUNCTIONS */
+
+void lsm6ds3_powerReset(void);
+
+int lsm6ds3_waitMeasure(I2C_HandleTypeDef *hand, int type, int dev);
+
+int16_t lsm6ds3_processBuff(uint8_t *buff);
+
+/* MAIN FUNCTIONS */
+
+void lsm6ds3_configure(I2C_HandleTypeDef *hand, int dev);
+
+void lsm6ds3_readManufac(I2C_HandleTypeDef *hand, int dev);
+
+void lsm6ds3_readTempData(I2C_HandleTypeDef *hand, int dev);
+
+
+#endif /* _LSM6DS3_H_ */

@@ -27,8 +27,10 @@
 #include <stdio.h>
 
 #include "testing_functions.h"
-#include "mmc5883.h"
 #include "mcp9804.h"
+#include "mmc5883.h"
+#include "lsm6ds3.h"
+
 
 /* USER CODE END Includes */
 
@@ -56,10 +58,14 @@ CAN_HandleTypeDef hcan2;
 
 I2C_HandleTypeDef hi2c2;
 I2C_HandleTypeDef hi2c3;
+I2C_HandleTypeDef hi2c4;
 
 QSPI_HandleTypeDef hqspi;
 
 SPI_HandleTypeDef hspi1;
+
+UART_HandleTypeDef huart2;
+UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN PV */
 
@@ -76,6 +82,9 @@ static void MX_QUADSPI_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_ADC2_Init(void);
 static void MX_I2C3_Init(void);
+static void MX_USART2_UART_Init(void);
+static void MX_USART3_UART_Init(void);
+static void MX_I2C4_Init(void);
 /* USER CODE BEGIN PFP */
 
 // SWD printf() replacement
@@ -128,11 +137,21 @@ int main(void)
   MX_SPI1_Init();
   MX_ADC2_Init();
   MX_I2C3_Init();
+  MX_USART2_UART_Init();
+  MX_USART3_UART_Init();
+  MX_I2C4_Init();
   /* USER CODE BEGIN 2 */
 
-	//test SDW printf
+	//test SDW printf()
   	HAL_Delay(1500);
 	printf("\nSDW printf() initialized\n\n");
+
+	// assign UART pointers
+	assign_huartPtr(&huart2, &huart3);
+
+	// open UART isolators
+	HAL_GPIO_WritePin(UART2_EN_GPIO_Port, UART2_EN_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOD, UART3_EN_Pin, GPIO_PIN_SET);
 
 	// MCP reset power
 	mcp9804_powerReset();
@@ -150,9 +169,22 @@ int main(void)
 
 	// MMC configure
 	mmc5883_configure(&hi2c3, 0);
+	mmc5883_configure(&hi2c4, 1);
 
 	// MMC read manufacturer
 	mmc5883_readManufac(&hi2c3, 0);
+	mmc5883_readManufac(&hi2c4, 1);
+
+	// LSM reset power
+	lsm6ds3_powerReset();
+
+	// LSM configure
+	lsm6ds3_configure(&hi2c4, 0);
+
+	// LSM read manufacturer
+	lsm6ds3_readManufac(&hi2c4, 0);
+
+	printf("------------------------------------------------\n");
 
 	// initial 0.5s wait
 	HAL_Delay(500);
@@ -164,66 +196,40 @@ int main(void)
 
 	//scanI2Caddr(&hi2c3);
 
-	for(int i=0; i<7; i++)
-		mcp9884_readData(&hi2c2, i);
-
-	mmc5883_readTempData(&hi2c3, 0);
-	mmc5883_readMagData(&hi2c3, 0);
-
 	// development loop
 	while(1) {
 
-	}
-
-	while(1) {
-
-		printf("\nBoard Sierra test iteration:\n");
-
-		//clock source checking ##############################################################################################################
-		printf("\n(2) Clock freq. and source demonstration:\n");
-
-		//read and print SYSCLK, HCLK, PCLK1 and PCLK2 frequencies
-		printf("\t- SYSCLK freq.: %lu [Hz]\n", HAL_RCC_GetSysClockFreq());
-		printf("\t- HCLK   freq.: %lu [Hz]\n", HAL_RCC_GetHCLKFreq());
-		printf("\t- PCLK1  freq.: %lu [Hz]\n", HAL_RCC_GetPCLK1Freq());
-		printf("\t- PCLK2  freq.: %lu [Hz]\n", HAL_RCC_GetPCLK2Freq());
-
-
-	/* power consumption */
-		printf("\n(3) Power management current readings:\n");
-
-		// read current for both channels
+		// current consumption
 		curr_readData(&hadc1, 0);
 		curr_readData(&hadc2, 1);
 
+		// MCP9884
+		for(int i=0; i<7; i++)
+			mcp9884_readData(&hi2c2, i);
 
-	/* temperature sensors */
-		printf("\n(4) Temperature sensors readings:\n");
+		// MMC5883
+		mmc5883_readTempData(&hi2c3, 0);
+		mmc5883_readTempData(&hi2c4, 1);
+		mmc5883_readMagData(&hi2c3, 0);
+		mmc5883_readMagData(&hi2c4, 1);
 
-		// loop and read temperature
-		/*for(int i=0; i<sizeof MCP_add; i++)
-			temp_readData(&hi2c2, i);*/
+		// LSM6DS3
+		lsm6ds3_readAccData(&hi2c4, 0);
+		lsm6ds3_readGyroData(&hi2c4, 0);
+		lsm6ds3_readTempData(&hi2c4, 0);
 
+		printf("------------------------------------------------\n");
 
-	/* QSPI flash memories */
-		printf("\n(5) NOR-Flash QSPI manufacturer data request:\n");
-
-		// loop and read manufacturer data
-		for(int i=0; i<3; i++)
-			flash_manufacData(&hqspi, i);
-
-
-	/* SPI f-ram memories */
-		printf("\n(6) F-RAM SPI manufacturer data request:\n");
-
-		// loop and read manufacturer data
-		for(int i=0; i<3; i++)
-			fram_manufacData(&hspi1, i);
-
-	/* end of the loop */
-		printf("\n\n");
-		HAL_Delay(2000);
+		HAL_Delay(1000);
 	}
+
+/*
+	//read and print SYSCLK, HCLK, PCLK1 and PCLK2 frequencies
+	printf("\t- SYSCLK freq.: %lu [Hz]\n", HAL_RCC_GetSysClockFreq());
+	printf("\t- HCLK   freq.: %lu [Hz]\n", HAL_RCC_GetHCLKFreq());
+	printf("\t- PCLK1  freq.: %lu [Hz]\n", HAL_RCC_GetPCLK1Freq());
+	printf("\t- PCLK2  freq.: %lu [Hz]\n", HAL_RCC_GetPCLK2Freq());
+*/
 
     /* USER CODE END WHILE */
 
@@ -249,7 +255,13 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
+  RCC_OscInitStruct.PLL.PLLM = 1;
+  RCC_OscInitStruct.PLL.PLLN = 8;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = RCC_PLLQ_DIV2;
+  RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV2;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -258,23 +270,27 @@ void SystemClock_Config(void)
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_3) != HAL_OK)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_I2C2|RCC_PERIPHCLK_I2C3
-                              |RCC_PERIPHCLK_ADC;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART2|RCC_PERIPHCLK_USART3
+                              |RCC_PERIPHCLK_I2C2|RCC_PERIPHCLK_I2C3
+                              |RCC_PERIPHCLK_I2C4|RCC_PERIPHCLK_ADC;
+  PeriphClkInit.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
+  PeriphClkInit.Usart3ClockSelection = RCC_USART3CLKSOURCE_PCLK1;
   PeriphClkInit.I2c2ClockSelection = RCC_I2C2CLKSOURCE_PCLK1;
   PeriphClkInit.I2c3ClockSelection = RCC_I2C3CLKSOURCE_PCLK1;
+  PeriphClkInit.I2c4ClockSelection = RCC_I2C4CLKSOURCE_PCLK1;
   PeriphClkInit.AdcClockSelection = RCC_ADCCLKSOURCE_PLLSAI1;
   PeriphClkInit.PLLSAI1.PLLSAI1Source = RCC_PLLSOURCE_HSI;
-  PeriphClkInit.PLLSAI1.PLLSAI1M = 4;
-  PeriphClkInit.PLLSAI1.PLLSAI1N = 16;
+  PeriphClkInit.PLLSAI1.PLLSAI1M = 1;
+  PeriphClkInit.PLLSAI1.PLLSAI1N = 8;
   PeriphClkInit.PLLSAI1.PLLSAI1P = RCC_PLLP_DIV2;
   PeriphClkInit.PLLSAI1.PLLSAI1Q = RCC_PLLQ_DIV2;
   PeriphClkInit.PLLSAI1.PLLSAI1R = RCC_PLLR_DIV2;
@@ -514,7 +530,7 @@ static void MX_I2C2_Init(void)
 
   /* USER CODE END I2C2_Init 1 */
   hi2c2.Instance = I2C2;
-  hi2c2.Init.Timing = 0x00303D5B;
+  hi2c2.Init.Timing = 0x10707DBC;
   hi2c2.Init.OwnAddress1 = 0;
   hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
@@ -560,7 +576,7 @@ static void MX_I2C3_Init(void)
 
   /* USER CODE END I2C3_Init 1 */
   hi2c3.Instance = I2C3;
-  hi2c3.Init.Timing = 0x00303D5B;
+  hi2c3.Init.Timing = 0x10707DBC;
   hi2c3.Init.OwnAddress1 = 0;
   hi2c3.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c3.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
@@ -587,6 +603,52 @@ static void MX_I2C3_Init(void)
   /* USER CODE BEGIN I2C3_Init 2 */
 
   /* USER CODE END I2C3_Init 2 */
+
+}
+
+/**
+  * @brief I2C4 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C4_Init(void)
+{
+
+  /* USER CODE BEGIN I2C4_Init 0 */
+
+  /* USER CODE END I2C4_Init 0 */
+
+  /* USER CODE BEGIN I2C4_Init 1 */
+
+  /* USER CODE END I2C4_Init 1 */
+  hi2c4.Instance = I2C4;
+  hi2c4.Init.Timing = 0x10707DBC;
+  hi2c4.Init.OwnAddress1 = 0;
+  hi2c4.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c4.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c4.Init.OwnAddress2 = 0;
+  hi2c4.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+  hi2c4.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c4.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure Analogue filter
+  */
+  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c4, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure Digital filter
+  */
+  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c4, 0) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C4_Init 2 */
+
+  /* USER CODE END I2C4_Init 2 */
 
 }
 
@@ -666,6 +728,76 @@ static void MX_SPI1_Init(void)
 }
 
 /**
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART2_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 115200;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_EVEN;
+  huart2.Init.Mode = UART_MODE_TX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart2.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
+
+}
+
+/**
+  * @brief USART3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART3_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART3_Init 0 */
+
+  /* USER CODE END USART3_Init 0 */
+
+  /* USER CODE BEGIN USART3_Init 1 */
+
+  /* USER CODE END USART3_Init 1 */
+  huart3.Instance = USART3;
+  huart3.Init.BaudRate = 115200;
+  huart3.Init.WordLength = UART_WORDLENGTH_8B;
+  huart3.Init.StopBits = UART_STOPBITS_1;
+  huart3.Init.Parity = UART_PARITY_EVEN;
+  huart3.Init.Mode = UART_MODE_TX;
+  huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart3.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart3.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart3.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  if (HAL_UART_Init(&huart3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART3_Init 2 */
+
+  /* USER CODE END USART3_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -679,10 +811,10 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOG_CLK_ENABLE();
   HAL_PWREx_EnableVddIO2();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(OSC_EN_GPIO_Port, OSC_EN_Pin, GPIO_PIN_RESET);
@@ -691,10 +823,17 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOC, SPI1_HOLD_Pin|SP1_WP_Pin|SPI1_CS1_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, QSPI_CS1_Pin|QSPI_CS2_Pin|SPI1_CS3_Pin|SPI1_CS2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, QSPI_CS1_Pin|QSPI_CS2_Pin|SPI1_CS3_Pin|SPI1_CS2_Pin
+                          |TEST2_Pin|TEST1_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, I2C3_EN_Pin|I2C2_EN_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(I2C4_EN_GPIO_Port, I2C4_EN_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOD, UART3_EN_Pin|I2C3_EN_Pin|I2C2_EN_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(UART2_EN_GPIO_Port, UART2_EN_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : OSC_EN_Pin */
   GPIO_InitStruct.Pin = OSC_EN_Pin;
@@ -710,8 +849,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : QSPI_CS1_Pin QSPI_CS2_Pin SPI1_CS3_Pin SPI1_CS2_Pin */
-  GPIO_InitStruct.Pin = QSPI_CS1_Pin|QSPI_CS2_Pin|SPI1_CS3_Pin|SPI1_CS2_Pin;
+  /*Configure GPIO pins : QSPI_CS1_Pin QSPI_CS2_Pin SPI1_CS3_Pin SPI1_CS2_Pin
+                           TEST2_Pin TEST1_Pin */
+  GPIO_InitStruct.Pin = QSPI_CS1_Pin|QSPI_CS2_Pin|SPI1_CS3_Pin|SPI1_CS2_Pin
+                          |TEST2_Pin|TEST1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -724,12 +865,26 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(SPI1_CS1_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : I2C3_EN_Pin I2C2_EN_Pin */
-  GPIO_InitStruct.Pin = I2C3_EN_Pin|I2C2_EN_Pin;
+  /*Configure GPIO pin : I2C4_EN_Pin */
+  GPIO_InitStruct.Pin = I2C4_EN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(I2C4_EN_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : UART3_EN_Pin I2C3_EN_Pin I2C2_EN_Pin */
+  GPIO_InitStruct.Pin = UART3_EN_Pin|I2C3_EN_Pin|I2C2_EN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : UART2_EN_Pin */
+  GPIO_InitStruct.Pin = UART2_EN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(UART2_EN_GPIO_Port, &GPIO_InitStruct);
 
 }
 

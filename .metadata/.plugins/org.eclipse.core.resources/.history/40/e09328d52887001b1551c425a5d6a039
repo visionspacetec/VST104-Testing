@@ -1,0 +1,135 @@
+/*
+ *	Author: Filip Geib
+ *	(c) 2021
+ */
+
+
+#include "lsm6ds3.h"
+
+
+/* DEFINITIONS AND CONSTANTS */
+
+// LSM6DS3 list of I2C addresses
+static const uint8_t ADDR[] = {0x6A};
+
+// measurement maximal timeout (in ms)
+#define TIMEOUT		200
+
+// LSM6DS3 significant registers
+
+#define REG_STAT	0x1E
+#define REG_CTRL1	0x10
+#define REG_CTRL2	0x11
+#define REG_CTRL3	0x12
+#define REG_CTRL5	0x0A
+
+#define REG_TEMP	0x20
+#define REG_GYRO	0x22
+#define	REG_ACC		0x28
+#define	REG_ID		0x0F
+
+// LSM6DS3 significant commands
+uint8_t CMD_SW_RST	= 0x05;
+
+uint8_t CMD_ODR_G	= 0x10;
+uint8_t CMD_ODR_XL	= 0x10;
+
+// MMC5883 significant constants
+#define RDY_XLDA	0
+#define RDY_GDA		1
+#define RDY_TDA		2
+
+/* SUPPORT FUNCTIONS */
+
+void lsm6ds3_powerReset() {
+	// isolate I2C bus
+	HAL_GPIO_WritePin(I2C4_EN_GPIO_Port, I2C4_EN_Pin, GPIO_PIN_RESET);
+	HAL_Delay(200);
+
+	// connect I2C bus
+	HAL_GPIO_WritePin(I2C4_EN_GPIO_Port, I2C4_EN_Pin, GPIO_PIN_SET);
+	HAL_Delay(100);
+
+	log_send(0, "lsm6ds3_powerReset", -1, "na", NAN);
+}
+
+
+int lsm6ds3_waitMeasure(I2C_HandleTypeDef *hand, int type, int dev) {
+	HAL_StatusTypeDef ret; uint8_t buff;
+
+	// variable for time management
+	int cnt = 0;
+
+	// periodically check status register
+	while(cnt*10 < TIMEOUT) {
+		// read status register
+		ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_STAT, 1, &buff, 1, I2C_TIMEOUT);
+		if(ret != HAL_OK) log_send(1, "lsm6ds3_waitMeasure", dev, "na", 1);
+
+		// check buffer (0:gyro, 1:acc, 2:temp)
+		if(type == 0 && (buff & (1 << RDY_XLDA))) return 0;
+		else if(type == 1 && (buff & (1 << RDY_GDA))) return 0;
+		else if(type == 2 && (buff & (1 << RDY_TDA))) return 0;
+
+		// wait 5ms and increase counter
+		HAL_Delay(5);
+		cnt++;
+	}
+
+	// timeout error
+	return -1;
+}
+
+
+/* MAIN FUNCTIONS */
+
+void lsm6ds3_configure(I2C_HandleTypeDef *hand, int dev) {
+	HAL_StatusTypeDef ret;
+
+	// reset device
+	ret = HAL_I2C_Mem_Write(hand, ADDR[dev] << 1, REG_CTRL3, 1, &CMD_SW_RST, 1, I2C_TIMEOUT);
+	if(ret != HAL_OK) log_send(1, "lsm6ds3_configure", dev, "na", 1);
+	HAL_Delay(100);
+
+	// enable accelerometer
+	ret = HAL_I2C_Mem_Write(hand, ADDR[dev] << 1, REG_CTRL1, 1, &CMD_ODR_XL, 1, I2C_TIMEOUT);
+	if(ret != HAL_OK) log_send(1, "lsm6ds3_configure", dev, "na", 3);
+
+	// enable gyroscope
+	ret = HAL_I2C_Mem_Write(hand, ADDR[dev] << 1, REG_CTRL2, 1, &CMD_ODR_G, 1, I2C_TIMEOUT);
+	if(ret != HAL_OK) log_send(1, "lsm6ds3_configure", dev, "na", 2);
+
+	log_send(0, "mmc5883_config", dev, "na", NAN);
+}
+
+
+void lsm6ds3_readManufac(I2C_HandleTypeDef *hand, int dev) {
+	HAL_StatusTypeDef ret; uint8_t buff;
+
+	// read product ID register
+	ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_ID, 1, &buff, 1, I2C_TIMEOUT);
+	if(ret != HAL_OK) log_send(1, "lsm6ds3_readManufac", dev, "na", 1);
+
+	// convert address to string
+	char tmp[3];
+	addr2str(&buff, 1, tmp);
+	log_send(2, "lsm6ds3_readManufac", dev, tmp, NAN);
+}
+
+
+void lsm6ds3_readTempData(I2C_HandleTypeDef *hand, int dev) {
+	HAL_StatusTypeDef ret; uint16_t buff; int waitRet;
+
+	// wait for measurement to complete
+	waitRet = waitRet = mmc5883_waitMeasure(hand, 2, dev);_waitMeasure(hand, 2, dev);
+	if(waitRet != 0) log_send(1, "lsm6ds3_readTempData", dev, "na", 1);
+
+	// read temperature register
+	ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_TEMP, 1, &buff, 2, I2C_TIMEOUT);
+	if(ret != HAL_OK) log_send(1, "lsm6ds3_readTempData", dev, "na", 2);
+
+	// process temperature value (formula from data-sheet, bit flip required)
+	float val = 25 + (float)buff / 16;
+
+	log_send(2, "mmc5883_readTempData", dev, "temp", val);
+}

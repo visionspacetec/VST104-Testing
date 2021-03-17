@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.debug.ui.LAUNCH_CONFIGURATIONS_DIALOG_SECTION">
-		<item key="org.eclipse.debug.ui.DIALOG_SASH_WEIGHTS_1" value="401"/>
-		<item key="org.eclipse.debug.ui.DIALOG_SASH_WEIGHTS_2" value="598"/>
+		<item key="org.eclipse.debug.ui.DIALOG_SASH_WEIGHTS_1" value="218"/>
+		<item key="org.eclipse.debug.ui.DIALOG_SASH_WEIGHTS_2" value="781"/>
 		<item key="org.eclipse.debug.ui.EXPANDED_NODES" value="com.st.stm32cube.ide.mcu.debug.launch.launchConfigurationType, "/>
 		<item key="DIALOG_WIDTH" value="1926"/>
 		<item key="DIALOG_HEIGHT" value="1053"/>

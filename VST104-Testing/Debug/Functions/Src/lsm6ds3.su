@@ -1,0 +1,8 @@
+lsm6ds3.c:51:6:lsm6ds3_powerReset	8	static
+lsm6ds3.c:64:5:lsm6ds3_waitMeasure	48	static
+lsm6ds3.c:91:9:lsm6ds3_processBuff	16	static
+lsm6ds3.c:98:6:lsm6ds3_configure	40	static
+lsm6ds3.c:118:6:lsm6ds3_readManufac	40	static
+lsm6ds3.c:132:6:lsm6ds3_readAccData	64	static
+lsm6ds3.c:155:6:lsm6ds3_readGyroData	64	static
+lsm6ds3.c:178:6:lsm6ds3_readTempData	48	static

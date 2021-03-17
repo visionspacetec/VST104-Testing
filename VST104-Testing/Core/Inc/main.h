@@ -86,17 +86,38 @@ void Error_Handler(void);
 #define SPI1_CS2_GPIO_Port GPIOA
 #define SPI1_CS1_Pin GPIO_PIN_4
 #define SPI1_CS1_GPIO_Port GPIOC
+#define I2C4_EN_Pin GPIO_PIN_12
+#define I2C4_EN_GPIO_Port GPIOB
+#define UART3_TX_Pin GPIO_PIN_8
+#define UART3_TX_GPIO_Port GPIOD
+#define UART3_RX_Pin GPIO_PIN_9
+#define UART3_RX_GPIO_Port GPIOD
+#define UART3_EN_Pin GPIO_PIN_10
+#define UART3_EN_GPIO_Port GPIOD
 #define I2C3_EN_Pin GPIO_PIN_14
 #define I2C3_EN_GPIO_Port GPIOD
+#define UART2_EN_Pin GPIO_PIN_2
+#define UART2_EN_GPIO_Port GPIOG
+#define TEST2_Pin GPIO_PIN_9
+#define TEST2_GPIO_Port GPIOA
+#define TEST1_Pin GPIO_PIN_10
+#define TEST1_GPIO_Port GPIOA
 #define SW_DIO_Pin GPIO_PIN_13
 #define SW_DIO_GPIO_Port GPIOA
 #define SW_CLK_Pin GPIO_PIN_14
 #define SW_CLK_GPIO_Port GPIOA
+#define UART2_TX_Pin GPIO_PIN_5
+#define UART2_TX_GPIO_Port GPIOD
+#define UART2_RX_Pin GPIO_PIN_6
+#define UART2_RX_GPIO_Port GPIOD
 #define I2C2_EN_Pin GPIO_PIN_7
 #define I2C2_EN_GPIO_Port GPIOD
 #define SW_0_Pin GPIO_PIN_3
 #define SW_0_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
+
+#define I2C_TIMEOUT 100
+#define UART_TIMEOUT 50
 
 /* USER CODE END Private defines */
 

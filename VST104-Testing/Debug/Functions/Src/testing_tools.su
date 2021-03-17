@@ -1,3 +1,4 @@
-testing_tools.c:18:6:addr2str	32	static
-testing_tools.c:25:6:scanI2Caddr	24	static
-testing_tools.c:39:6:log_send	64	static
+testing_tools.c:23:6:addr2str	32	static
+testing_tools.c:30:6:scanI2Caddr	24	static
+testing_tools.c:44:6:assign_huartPtr	16	static
+testing_tools.c:50:6:log_send	328	static
