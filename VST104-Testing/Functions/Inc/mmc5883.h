@@ -26,6 +26,7 @@ void mmc5883_powerReset(void);
 
 int mmc5883_waitMeasure(I2C_HandleTypeDef *hand, bool type, int dev);
 
+uint16_t mmc5883_processBuff(uint8_t *buff, int data);
 
 /* MAIN FUNCTIONS */
 
@@ -33,9 +34,9 @@ void mmc5883_configure(I2C_HandleTypeDef *hand, int dev);
 
 void mmc5883_readManufac(I2C_HandleTypeDef *hand, int dev);
 
-void mmc5883_readTempData(I2C_HandleTypeDef *hand, int dev);
-
 void mmc5883_readMagData(I2C_HandleTypeDef *hand, int dev);
+
+void mmc5883_readTempData(I2C_HandleTypeDef *hand, int dev);
 
 
 #endif /* _MMC5883_H_ */
