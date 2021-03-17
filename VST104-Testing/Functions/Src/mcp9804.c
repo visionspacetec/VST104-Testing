@@ -12,6 +12,9 @@
 // MCP9804 list of I2C addresses
 static const uint8_t ADDR[] = {0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1E, 0x1F};
 
+// measurement maximal timeout (in ms)
+#define TIMEOUT		20
+
 // MCP9804 significant registers
 #define REG_CONF	0x01
 #define REG_TEMP	0x05
@@ -19,14 +22,16 @@ static const uint8_t ADDR[] = {0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1E, 0x1F};
 #define REG_DEV		0x07
 #define REG_RES		0x08
 
-// MCP9804 significant commands
 
 
 /* SUPPORT FUNCTIONS */
 
 void mcp9804_powerReset() {
+	// isolate I2C bus
 	HAL_GPIO_WritePin(I2C2_EN_GPIO_Port, I2C2_EN_Pin, GPIO_PIN_RESET);
 	HAL_Delay(200);
+
+	// connect I2C bus
 	HAL_GPIO_WritePin(I2C2_EN_GPIO_Port, I2C2_EN_Pin, GPIO_PIN_SET);
 	HAL_Delay(100);
 
@@ -40,7 +45,7 @@ void mcp9804_configure(I2C_HandleTypeDef *hand, int dev) {
 
 	// right now nothing to do
 
-	log_send(0, "temp_configure", dev, "na", NAN);
+	log_send(0, "mcp9804_configure", dev, "na", NAN);
 }
 
 
@@ -48,7 +53,7 @@ void mcp9884_readManufac(I2C_HandleTypeDef *hand, int dev) {
 	HAL_StatusTypeDef ret; uint8_t buff[2];
 
 	// read manufacturer ID register
-	ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_ID, 1, buff, 2, HAL_MAX_DELAY);
+	ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_ID, 1, buff, 2, I2C_TIMEOUT);
 	if(ret != HAL_OK) log_send(1, "mcp9884_readManufac", dev, "na", 1);
 
 	// convert address to string
@@ -57,7 +62,7 @@ void mcp9884_readManufac(I2C_HandleTypeDef *hand, int dev) {
 	log_send(2, "mcp9884_readManufac->manufacturer_id", dev, tmp, NAN);
 
 	// read dev ID and revision register
-	ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_DEV, 1, buff, 2, HAL_MAX_DELAY);
+	ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_DEV, 1, buff, 2, I2C_TIMEOUT);
 	if(ret != HAL_OK) log_send(1, "mcp9884_readManufac", dev, "na", 2);
 
 	// convert address to string
@@ -74,7 +79,7 @@ void mcp9884_readData(I2C_HandleTypeDef *hand, int dev) {
 	HAL_StatusTypeDef ret; uint8_t buff[2];
 
 	// read temperature register
-	ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_TEMP, 1, buff, 2, HAL_MAX_DELAY);
+	ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_TEMP, 1, buff, 2, I2C_TIMEOUT);
 	if(ret != HAL_OK) log_send(1, "mcp9884_readData", dev, "na", 1);
 
 	// clear flag byte
