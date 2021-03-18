@@ -57,7 +57,7 @@ void lsm6ds3_powerReset() {
 	HAL_GPIO_WritePin(I2C4_EN_GPIO_Port, I2C4_EN_Pin, GPIO_PIN_SET);
 	HAL_Delay(100);
 
-	log_send(0, "lsm6ds3_powerReset", -1, "na", NAN);
+	log_info("lsm6ds3_powerReset", -1);
 }
 
 
@@ -71,7 +71,7 @@ int lsm6ds3_waitMeasure(I2C_HandleTypeDef *hand, int type, int dev) {
 	while(cnt*5 < TIMEOUT) {
 		// read status register
 		ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_STAT, 1, &buff, 1, I2C_TIMEOUT);
-		if(ret != HAL_OK) log_send(1, "lsm6ds3_waitMeasure", dev, "na", 1);
+		if(ret != HAL_OK) log_error("lsm6ds3_waitMeasure", dev, 0, ret);
 
 		// check buffer (0:acc, 1:gyro, 2:temp)
 		if(type == 0 && (buff & (1 << RDY_XLDA))) return 0;
@@ -100,18 +100,18 @@ void lsm6ds3_configure(I2C_HandleTypeDef *hand, int dev) {
 
 	// reset device
 	ret = HAL_I2C_Mem_Write(hand, ADDR[dev] << 1, REG_CTRL3, 1, &CMD_SW_RST, 1, I2C_TIMEOUT);
-	if(ret != HAL_OK) log_send(1, "lsm6ds3_configure", dev, "na", 1);
+	if(ret != HAL_OK) log_error("lsm6ds3_configure", dev, 0, ret);
 	HAL_Delay(100);
 
 	// enable accelerometer
 	ret = HAL_I2C_Mem_Write(hand, ADDR[dev] << 1, REG_CTRL1, 1, &CMD_ODR_XL, 1, I2C_TIMEOUT);
-	if(ret != HAL_OK) log_send(1, "lsm6ds3_configure", dev, "na", 3);
+	if(ret != HAL_OK) log_error("lsm6ds3_configure", dev, 1, ret);
 
 	// enable gyroscope
 	ret = HAL_I2C_Mem_Write(hand, ADDR[dev] << 1, REG_CTRL2, 1, &CMD_ODR_G, 1, I2C_TIMEOUT);
-	if(ret != HAL_OK) log_send(1, "lsm6ds3_configure", dev, "na", 2);
+	if(ret != HAL_OK) log_error("lsm6ds3_configure", dev, 2, ret);
 
-	log_send(0, "mmc5883_config", dev, "na", NAN);
+	log_info("lsm6ds3_configure", dev);
 }
 
 
@@ -120,12 +120,12 @@ void lsm6ds3_readManufac(I2C_HandleTypeDef *hand, int dev) {
 
 	// read product ID register
 	ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_ID, 1, &buff, 1, I2C_TIMEOUT);
-	if(ret != HAL_OK) log_send(1, "lsm6ds3_readManufac", dev, "na", 1);
+	if(ret != HAL_OK) log_error("lsm6ds3_readManufac", dev, 0, ret);
 
 	// convert address to string
 	char tmp[3];
 	addr2str(&buff, 1, tmp);
-	log_send(2, "lsm6ds3_readManufac", dev, tmp, NAN);
+	log_data("lsm6ds3", dev, "dev_id", tmp, NAN);
 }
 
 
@@ -134,11 +134,11 @@ void lsm6ds3_readAccData(I2C_HandleTypeDef *hand, int dev) {
 
 	// wait for measurement to complete
 	waitRet = lsm6ds3_waitMeasure(hand, 0, dev);
-	if(waitRet != 0) log_send(1, "lsm6ds3_readAccData", dev, "na", 1);
+	if(waitRet != 0) log_error("lsm6ds3_readAccData", dev, 0, 4);
 
 	// read accelerometer register
 	ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_ACC, 1, buff, 6, I2C_TIMEOUT);
-	if(ret != HAL_OK) log_send(1, "lsm6ds3_readAccData", dev, "na", 2);
+	if(ret != HAL_OK) log_error("lsm6ds3_readAccData", dev, 1, ret);
 
 	// process accelerometer data
 	float val[3];
@@ -146,9 +146,9 @@ void lsm6ds3_readAccData(I2C_HandleTypeDef *hand, int dev) {
 		val[i] = (float)lsm6ds3_processBuff(buff, i) * (LA_So / 1000) * (LA_FS / 2);
 	}
 
-	log_send(2, "lsm6ds3_readAccData", dev, "acc_x", val[0]);
-	log_send(2, "lsm6ds3_readAccData", dev, "acc_y", val[1]);
-	log_send(2, "lsm6ds3_readAccData", dev, "acc_z", val[2]);
+	log_data("lsm6ds3", dev, "acc_x", "NA", val[0]);
+	log_data("lsm6ds3", dev, "acc_y", "NA", val[1]);
+	log_data("lsm6ds3", dev, "acc_z", "NA", val[2]);
 }
 
 
@@ -157,11 +157,11 @@ void lsm6ds3_readGyroData(I2C_HandleTypeDef *hand, int dev) {
 
 	// wait for measurement to complete
 	waitRet = lsm6ds3_waitMeasure(hand, 1, dev);
-	if(waitRet != 0) log_send(1, "lsm6ds3_readGyroData", dev, "na", 1);
+	if(waitRet != 0) log_error("lsm6ds3_readGyroData", dev, 0, 4);
 
 	// read gyroscope register
 	ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_GYRO, 1, buff, 6, I2C_TIMEOUT);
-	if(ret != HAL_OK) log_send(1, "lsm6ds3_readGyroData", dev, "na", 2);
+	if(ret != HAL_OK) log_error("lsm6ds3_readGyroData", dev, 1, ret);
 
 	// process gyroscope data
 	float val[3];
@@ -169,9 +169,9 @@ void lsm6ds3_readGyroData(I2C_HandleTypeDef *hand, int dev) {
 		val[i] = (float)lsm6ds3_processBuff(buff, i) * (G_So / 1000) * (G_FS / 125);
 	}
 
-	log_send(2, "lsm6ds3_readGyroData", dev, "gyro_x", val[0]);
-	log_send(2, "lsm6ds3_readGyroData", dev, "gyro_y", val[1]);
-	log_send(2, "lsm6ds3_readGyroData", dev, "gyro_z", val[2]);
+	log_data("lsm6ds3", dev, "gyro_x", "NA", val[0]);
+	log_data("lsm6ds3", dev, "gyro_y", "NA", val[1]);
+	log_data("lsm6ds3", dev, "gyro_z", "NA", val[2]);
 }
 
 
@@ -180,14 +180,14 @@ void lsm6ds3_readTempData(I2C_HandleTypeDef *hand, int dev) {
 
 	// wait for measurement to complete
 	waitRet = lsm6ds3_waitMeasure(hand, 2, dev);
-	if(waitRet != 0) log_send(1, "lsm6ds3_readTempData", dev, "na", 1);
+	if(waitRet != 0) log_error("lsm6ds3_readTempData", dev, 0, 4);
 
 	// read temperature register
 	ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_TEMP, 1, buff, 2, I2C_TIMEOUT);
-	if(ret != HAL_OK) log_send(1, "lsm6ds3_readTempData", dev, "na", 2);
+	if(ret != HAL_OK) log_error("lsm6ds3_readTempData", dev, 1, ret);
 
 	// process temperature value
 	float val = T_Off + (float)lsm6ds3_processBuff(buff,0) / T_So;
 
-	log_send(2, "mmc5883_readTempData", dev, "temp", val);
+	log_data("lsm6ds3", dev, "temp", "NA", val);
 }

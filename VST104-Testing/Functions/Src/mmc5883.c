@@ -57,11 +57,11 @@ void mmc5883_powerReset() {
 	HAL_GPIO_WritePin(I2C4_EN_GPIO_Port, I2C4_EN_Pin, GPIO_PIN_SET);
 	HAL_Delay(100);
 
-	log_send(0, "mmc5883_powerReset", -1, "na", NAN);
+	log_info("mmc5883_powerReset", -1);
 }
 
 
-int mmc5883_waitMeasure(I2C_HandleTypeDef *hand, bool type, int dev) {
+int mmc5883_waitMeasure(I2C_HandleTypeDef *hand, int type, int dev) {
 	HAL_StatusTypeDef ret; uint8_t buff;
 
 	// variable for time management
@@ -71,7 +71,7 @@ int mmc5883_waitMeasure(I2C_HandleTypeDef *hand, bool type, int dev) {
 	while(cnt*5 < TIMEOUT) {
 		// read status register
 		ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_STAT, 1, &buff, 1, I2C_TIMEOUT);
-		if(ret != HAL_OK) log_send(1, "mmc5883_waitMeasure", dev, "na", 1);
+		if(ret != HAL_OK) log_error("mmc5883_waitMeasure", dev, 0, ret);
 
 		// check buffer (0:mag, 1:temp)
 		if(!type && (buff & (1 << RDY_TM_M))) return 0;
@@ -99,10 +99,10 @@ void mmc5883_configure(I2C_HandleTypeDef *hand, int dev) {
 
 	// reset device - clear registers (5ms power on)
 	ret = HAL_I2C_Mem_Write(hand, ADDR[dev] << 1, REG_CTRL1, 1, &CMD_SW_RST, 1, I2C_TIMEOUT);
-	if(ret != HAL_OK) log_send(1, "mmc5883_configure", dev, "na", 1);
+	if(ret != HAL_OK) log_error("mmc5883_configure", dev, 0, ret);
 	HAL_Delay(100);
 
-	log_send(0, "mmc5883_config", dev, "na", NAN);
+	log_info("mmc5883_configure", dev);
 }
 
 
@@ -111,12 +111,12 @@ void mmc5883_readManufac(I2C_HandleTypeDef *hand, int dev) {
 
 	// read product ID register
 	ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_ID, 1, &buff, 1, I2C_TIMEOUT);
-	if(ret != HAL_OK) log_send(1, "mmc5883_readManufac", dev, "na", 2);
+	if(ret != HAL_OK) log_error("mmc5883_readManufac", dev, 0, ret);
 
 	// convert address to string
 	char tmp[3];
 	addr2str(&buff, 1, tmp);
-	log_send(2, "mmc5883_readManufac", dev, tmp, NAN);
+	log_data("mmc5883", dev, "dev_id", tmp, NAN);
 }
 
 
@@ -125,19 +125,19 @@ void mmc5883_readMagData(I2C_HandleTypeDef *hand, int dev) {
 
 	// set magnetometer
 	ret = HAL_I2C_Mem_Write(hand, ADDR[dev] << 1, REG_CTRL0, 1, &CMD_SET, 1, I2C_TIMEOUT);
-	if(ret != HAL_OK) log_send(1, "mmc5883_readMagData", dev, "na", 1);
+	if(ret != HAL_OK) log_error("mmc5883_readMagData", dev, 0, ret);
 
 	// initiate magnetic measurement
 	ret = HAL_I2C_Mem_Write(hand, ADDR[dev] << 1, REG_CTRL0, 1, &CMD_TM_M, 1, I2C_TIMEOUT);
-	if(ret != HAL_OK) log_send(1, "mmc5883_readMagData", dev, "na", 2);
+	if(ret != HAL_OK) log_error("mmc5883_readMagData", dev, 1, ret);
 
 	// wait for measurement to complete
 	waitRet = mmc5883_waitMeasure(hand, 0, dev);
-	if(waitRet != 0) log_send(1, "mmc5883_readMagData", dev, "na", 3);
+	if(waitRet != 0) log_error("mmc5883_readMagData", dev, 2, 4);
 
 	// read magnetic register
 	ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_MAG, 1, buff, 6, I2C_TIMEOUT);
-	if(ret != HAL_OK) log_send(1, "mmc5883_readMagData", dev, "na", 4);
+	if(ret != HAL_OK) log_error("mmc5883_readMagData", dev, 3, ret);
 
 	// process measurement 1
 	uint16_t valTmp[6];
@@ -146,19 +146,19 @@ void mmc5883_readMagData(I2C_HandleTypeDef *hand, int dev) {
 
 	// reset magnetometer
 	ret = HAL_I2C_Mem_Write(hand, ADDR[dev] << 1, REG_CTRL0, 1, &CMD_RST, 1, I2C_TIMEOUT);
-	if(ret != HAL_OK) log_send(1, "mmc5883_readMagData", dev, "na", 5);
+	if(ret != HAL_OK) log_error("mmc5883_readMagData", dev, 4, ret);
 
 	// initiate magnetic measurement
 	ret = HAL_I2C_Mem_Write(hand, ADDR[dev] << 1, REG_CTRL0, 1, &CMD_TM_M, 1, I2C_TIMEOUT);
-	if(ret != HAL_OK) log_send(1, "mmc5883_readMagData", dev, "na", 6);
+	if(ret != HAL_OK) log_error("mmc5883_readMagData", dev, 5, ret);
 
 	// wait for measurement to complete
 	waitRet = mmc5883_waitMeasure(hand, 0, dev);
-	if(waitRet != 0) log_send(1, "mmc5883_readMagData", dev, "na", 7);
+	if(waitRet != 0) log_error("mmc5883_readMagData", dev, 6, 4);
 
 	// read magnetic register
 	ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_MAG, 1, buff, 6, I2C_TIMEOUT);
-	if(ret != HAL_OK) log_send(1, "mmc5883_readData", dev, "na", 8);
+	if(ret != HAL_OK) log_error("mmc5883_readMagData", dev, 7, ret);
 
 	// process measurement 2
 	for(int i=0; i<3; i++)
@@ -176,9 +176,9 @@ void mmc5883_readMagData(I2C_HandleTypeDef *hand, int dev) {
 		val[i] = val[i] * (MAG_So / 1000) * (MAG_FS / 8);
 	}
 
-	log_send(2, "mmc5883_readMagData", dev, "mag_x", val[0]);
-	log_send(2, "mmc5883_readMagData", dev, "mag_y", val[1]);
-	log_send(2, "mmc5883_readMagData", dev, "mag_z", val[2]);
+	log_data("mmc5883", dev, "mag_x", "NA", val[0]);
+	log_data("mmc5883", dev, "mag_y", "NA", val[1]);
+	log_data("mmc5883", dev, "mag_z", "NA", val[2]);
 }
 
 
@@ -187,19 +187,19 @@ void mmc5883_readTempData(I2C_HandleTypeDef *hand, int dev) {
 
 	// initiate temperature measurement
 	ret = HAL_I2C_Mem_Write(hand, ADDR[dev] << 1, REG_CTRL0, 1, &CMD_TM_T, 1, I2C_TIMEOUT);
-	if(ret != HAL_OK) log_send(1, "mmc5883_readData", dev, "na", 1);
+	if(ret != HAL_OK) log_error("mmc5883_readTempData", dev, 0, ret);
 
 	// wait for measurement to complete
 	waitRet = mmc5883_waitMeasure(hand, 1, dev);
-	if(waitRet != 0) log_send(1, "mmc5883_readData", dev, "na", 2);
+	if(waitRet != 0) log_error("mmc5883_readTempData", dev, 1, 4);
 
 	// read temperature register
 	ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_TEMP, 1, &buff, 1, I2C_TIMEOUT);
-	if(ret != HAL_OK) log_send(1, "mmc5883_readData", dev, "na", 3);
+	if(ret != HAL_OK) log_error("mmc5883_readTempData", dev, 2, ret);
 
 	// process temperature value (formula from data-sheet)
 	float val = T_Off + T_So*(float)buff;
 
-	log_send(2, "mmc5883_readTempData", dev, "temp", val);
+	log_data("mmc5883", dev, "temp", "NA", val);
 }
 

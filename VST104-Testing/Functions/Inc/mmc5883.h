@@ -11,7 +11,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <stdbool.h>
 #include <math.h>
 
 #include "main.h"
@@ -24,7 +23,7 @@
 
 void mmc5883_powerReset(void);
 
-int mmc5883_waitMeasure(I2C_HandleTypeDef *hand, bool type, int dev);
+int mmc5883_waitMeasure(I2C_HandleTypeDef *hand, int type, int dev);
 
 uint16_t mmc5883_processBuff(uint8_t *buff, int data);
 

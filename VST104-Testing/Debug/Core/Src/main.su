@@ -1,6 +1,6 @@
 core_cm4.h:2059:26:ITM_SendChar	16	static,ignoring_inline_asm
-main.c:92:5:_write	32	static
-main.c:109:5:main	24	static
+main.c:93:5:_write	32	static
+main.c:110:5:main	24	static
 main.c:253:6:SystemClock_Config	264	static
 main.c:336:13:MX_ADC1_Init	48	static
 main.c:400:13:MX_ADC2_Init	32	static

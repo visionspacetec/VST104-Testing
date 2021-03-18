@@ -27,6 +27,7 @@
 #include <stdio.h>
 
 #include "testing_functions.h"
+#include "adc.h"
 #include "mcp9804.h"
 #include "mmc5883.h"
 #include "lsm6ds3.h"
@@ -145,14 +146,13 @@ int main(void)
 
 	//test SDW printf()
   	HAL_Delay(1500);
-	printf("\nSDW printf() initialized\n\n");
+	printf("\nProgramm initialized\n\n");
 
 	// assign UART pointers
-	assign_huartPtr(&huart2, &huart3);
+	log_assignHuart(&huart2, &huart3);
 
-	// open UART isolators
-	HAL_GPIO_WritePin(UART2_EN_GPIO_Port, UART2_EN_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOD, UART3_EN_Pin, GPIO_PIN_SET);
+	// open log isolators
+	log_enable();
 
 	// MCP reset power
 	mcp9804_powerReset();

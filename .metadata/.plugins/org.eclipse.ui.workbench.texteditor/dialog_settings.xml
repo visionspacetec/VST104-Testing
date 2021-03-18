@@ -6,8 +6,14 @@
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
-		<item key="selection" value="REG_PWR1"/>
+		<item key="selection" value="dev"/>
 		<list key="findhistory">
+			<item value="device"/>
+			<item value="handler"/>
+			<item value="value"/>
+			<item value="acc"/>
+			<item value="result"/>
+			<item value="UART2_EN_GPIO_Port"/>
 			<item value="REG_PWR1"/>
 			<item value="REG_DATA"/>
 			<item value="REG_MAG"/>
@@ -17,29 +23,23 @@
 			<item value="UART3_EN_Pin"/>
 			<item value="UART2_EN_Pin"/>
 			<item value="TEST1"/>
-			<item value="UART1_EN"/>
-			<item value="UART_EN"/>
-			<item value="MCP_add"/>
-			<item value="device"/>
-			<item value="handler"/>
-			<item value="tmpRev"/>
 		</list>
 		<list key="replacehistory">
+			<item value="dev"/>
+			<item value="hand"/>
+			<item value="val"/>
+			<item value="gyro"/>
+			<item value="ret"/>
 			<item value="REG_MAG"/>
 			<item value=""/>
 			<item value="I2C_TIMEOUT"/>
 			<item value="I2C"/>
 			<item value="ADDR"/>
-			<item value="dev"/>
-			<item value="hand"/>
 			<item value="tmp"/>
 			<item value="tmpManu"/>
-			<item value="val"/>
 			<item value="valTmp"/>
 			<item value="static uint8_t"/>
 			<item value="&quot;na&quot;"/>
-			<item value="handler"/>
-			<item value="buff"/>
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">

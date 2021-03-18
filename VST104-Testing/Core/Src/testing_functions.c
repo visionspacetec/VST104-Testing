@@ -14,6 +14,8 @@
 
 /* CONTROL FUNCTIONS */
 
+/*
+
 	int flash_processCommand(QSPI_HandleTypeDef *handler, uint8_t command, uint8_t *buff, int size, int device) {
 		HAL_StatusTypeDef ret; QSPI_CommandTypeDef sCommand;
 
@@ -87,30 +89,11 @@
 		return errNo;
 	}
 
+*/
 
 /* TESTING FUNCTIONS */
 
-	void curr_readData(ADC_HandleTypeDef *handler, int device) {
-		//start ADC conversion
-		HAL_ADC_Start(handler);
-
-		//poll ADC peripheral
-		HAL_ADC_PollForConversion(handler, 1);
-
-		//read ADC conversion result
-		uint16_t raw_value = HAL_ADC_GetValue(handler);
-
-		//stop ADC conversion
-		HAL_ADC_Stop(handler);
-
-		//compute current consumption from ADC values in [mA]
-		float value = (3000 * (float)VREFINT_CAL / (float)raw_value) / 1000;
-		value = (value - CUR_IOS * CUR_RMON) / (CUR_GAIN * CUR_RMON);
-
-		log_send(2, "curr_readData", device, "na", value);
-	}
-
-
+/*
 	void flash_manufacData(QSPI_HandleTypeDef *handler, int device) {
 		// prepare variables
 		int ret; uint8_t buff[8];
@@ -149,4 +132,4 @@
 
 	}
 
-
+*/
