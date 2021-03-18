@@ -1,0 +1,46 @@
+/*
+ *	Author: Filip Geib
+ *	(c) 2021
+ */
+
+
+#include "mpu6050.h"
+
+
+/* DEFINITIONS AND CONSTANTS */
+
+// MPU6050 list of I2C addresses
+static const uint8_t ADDR[] = {0x68};
+
+// measurement maximal timeout (in ms)
+#define TIMEOUT		20
+
+// MPU6050 significant registers
+#define REG_CONF	0x1A
+
+#define REG_ACC		0x3B
+#define REG_TEMP	0x41
+#define REG_GYRO	0x43
+
+// MPU6050 significant commands
+
+
+// MPU6050 significant constants
+
+/* SUPPORT FUNCTIONS */
+void mpu6050_powerReset() {
+	// isolate I2C bus
+	HAL_GPIO_WritePin(I2C3_EN_GPIO_Port, I2C3_EN_Pin, GPIO_PIN_RESET);
+	HAL_Delay(200);
+
+	// connect I2C bus
+	HAL_GPIO_WritePin(I2C3_EN_GPIO_Port, I2C3_EN_Pin, GPIO_PIN_SET);
+	HAL_Delay(100);
+
+	log_send(0, "mmc5883_powerReset", -1, "na", NAN);
+}
+
+
+/* MAIN FUNCTIONS */
+
+

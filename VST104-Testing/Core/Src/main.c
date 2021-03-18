@@ -30,6 +30,7 @@
 #include "mcp9804.h"
 #include "mmc5883.h"
 #include "lsm6ds3.h"
+#include "mpu6050.h"
 
 
 /* USER CODE END Includes */
@@ -184,17 +185,21 @@ int main(void)
 	// LSM read manufacturer
 	lsm6ds3_readManufac(&hi2c4, 0);
 
-	printf("------------------------------------------------\n");
+	// MPU reset power
+	mpu6050_powerReset();
 
-	// initial 0.5s wait
+	// MPU configure
+	mpu6050_configure(&hi2c3, 0);
+
+	// MPU read manufacturer
+	mpu6050_readManufac(&hi2c3, 0);
+
 	HAL_Delay(500);
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
-	//scanI2Caddr(&hi2c3);
 
 	// development loop
 	while(1) {
@@ -218,9 +223,12 @@ int main(void)
 		lsm6ds3_readGyroData(&hi2c4, 0);
 		lsm6ds3_readTempData(&hi2c4, 0);
 
-		printf("------------------------------------------------\n");
+		// MPU6050
+		mpu6050_readAccData(&hi2c3, 0);
+		mpu6050_readGyroData(&hi2c3, 0);
+		mpu6050_readTempData(&hi2c3, 0);
 
-		HAL_Delay(1000);
+		HAL_Delay(5000);
 	}
 
 /*

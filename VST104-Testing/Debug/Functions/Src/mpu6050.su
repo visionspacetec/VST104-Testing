@@ -1,0 +1,8 @@
+mpu6050.c:48:6:mpu6050_powerReset	8	static
+mpu6050.c:61:5:mpu6050_waitMeasure	40	static
+mpu6050.c:86:9:mpu6050_processBuff	16	static
+mpu6050.c:93:6:mpu6050_configure	40	static
+mpu6050.c:119:6:mpu6050_readManufac	40	static
+mpu6050.c:133:6:mpu6050_readAccData	64	static
+mpu6050.c:156:6:mpu6050_readGyroData	64	static
+mpu6050.c:179:6:mpu6050_readTempData	48	static

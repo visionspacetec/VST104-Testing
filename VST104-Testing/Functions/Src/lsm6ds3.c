@@ -13,7 +13,7 @@
 static const uint8_t ADDR[] = {0x6A};
 
 // measurement maximal timeout (in ms)
-#define TIMEOUT		200
+#define TIMEOUT		80	// 12.5 Hz
 
 // LSM6DS3 significant registers
 #define REG_STAT	0x1E
@@ -39,11 +39,11 @@ static uint8_t CMD_ODR_XL	= 0x10;
 #define RDY_TDA		2
 
 #define LA_So		0.061	// mg/LSB
-#define	LA_FS		2		// g
+#define	LA_FS		2.0		// g
 #define G_So		4.375	// mdps/LSB
-#define G_FS		125		// dps
-#define T_So		16		// LSB/degC
-#define T_Off		25		// degC
+#define G_FS		125.0	// dps
+#define T_So		16.0	// LSB/degC
+#define T_Off		25.0	// degC
 
 
 /* SUPPORT FUNCTIONS */
@@ -68,7 +68,7 @@ int lsm6ds3_waitMeasure(I2C_HandleTypeDef *hand, int type, int dev) {
 	int cnt = 0;
 
 	// periodically check status register
-	while(cnt*10 < TIMEOUT) {
+	while(cnt*5 < TIMEOUT) {
 		// read status register
 		ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_STAT, 1, &buff, 1, I2C_TIMEOUT);
 		if(ret != HAL_OK) log_send(1, "lsm6ds3_waitMeasure", dev, "na", 1);
@@ -136,11 +136,11 @@ void lsm6ds3_readAccData(I2C_HandleTypeDef *hand, int dev) {
 	waitRet = lsm6ds3_waitMeasure(hand, 0, dev);
 	if(waitRet != 0) log_send(1, "lsm6ds3_readAccData", dev, "na", 1);
 
-	// read gyroscope register
+	// read accelerometer register
 	ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_ACC, 1, buff, 6, I2C_TIMEOUT);
 	if(ret != HAL_OK) log_send(1, "lsm6ds3_readAccData", dev, "na", 2);
 
-	// process gyroscope data
+	// process accelerometer data
 	float val[3];
 	for(int i=0; i<3; i++) {
 		val[i] = (float)lsm6ds3_processBuff(buff, i) * (LA_So / 1000) * (LA_FS / 2);

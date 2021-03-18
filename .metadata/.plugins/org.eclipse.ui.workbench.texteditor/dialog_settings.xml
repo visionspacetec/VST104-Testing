@@ -6,8 +6,9 @@
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
-		<item key="selection" value="REG_MAG"/>
+		<item key="selection" value="REG_PWR1"/>
 		<list key="findhistory">
+			<item value="REG_PWR1"/>
 			<item value="REG_DATA"/>
 			<item value="REG_MAG"/>
 			<item value="I2C4_EN"/>
@@ -22,7 +23,6 @@
 			<item value="device"/>
 			<item value="handler"/>
 			<item value="tmpRev"/>
-			<item value="tmpManu"/>
 		</list>
 		<list key="replacehistory">
 			<item value="REG_MAG"/>

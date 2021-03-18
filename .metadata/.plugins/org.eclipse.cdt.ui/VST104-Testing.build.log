@@ -1,10 +1,20 @@
-16:08:14 **** Incremental Build of configuration Debug for project VST104-Testing ****
+01:39:01 **** Incremental Build of configuration Debug for project VST104-Testing ****
 make -j8 all 
+arm-none-eabi-gcc "../Functions/Src/mmc5883.c" -mcpu=cortex-m4 -std=gnu11 -g -DDEBUG -DUSE_HAL_DRIVER -DSTM32L496xx -c -I../Drivers/CMSIS/Include -I../Core/Inc -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Functions/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Functions/Src/mmc5883.d" -MT"Functions/Src/mmc5883.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Functions/Src/mmc5883.o"
+arm-none-eabi-g++ -o "VST104-Testing.elf" @"objects.list"   -mcpu=cortex-m4 -T"/CommonData/CVUT/intership/VisionSpace/VST104-Testing/VST104-Testing/STM32L496ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="VST104-Testing.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+Finished building target: VST104-Testing.elf
+ 
+arm-none-eabi-objdump -h -S  VST104-Testing.elf  > "VST104-Testing.list"
+arm-none-eabi-objcopy  -O binary  VST104-Testing.elf  "VST104-Testing.bin"
 arm-none-eabi-size   VST104-Testing.elf 
    text	   data	    bss	    dec	    hex	filename
-  54924	    496	   2568	  57988	   e284	VST104-Testing.elf
+  56628	    496	   2576	  59700	   e934	VST104-Testing.elf
 Finished building: default.size.stdout
  
+Finished building: VST104-Testing.bin
+ 
+Finished building: VST104-Testing.list
+ 
 
-16:08:15 Build Finished. 0 errors, 0 warnings. (took 373ms)
+01:39:02 Build Finished. 0 errors, 0 warnings. (took 854ms)
 

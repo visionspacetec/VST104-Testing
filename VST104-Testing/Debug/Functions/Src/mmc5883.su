@@ -1,7 +1,7 @@
-mmc5883.c:48:6:mmc5883_powerReset	8	static
-mmc5883.c:63:5:mmc5883_waitMeasure	48	static
-mmc5883.c:89:10:mmc5883_processBuff	16	static
-mmc5883.c:96:6:mmc5883_configure	40	static
-mmc5883.c:108:6:mmc5883_readManufac	40	static
-mmc5883.c:122:6:mmc5883_readMagData	112	static
-mmc5883.c:184:6:mmc5883_readTempData	48	static
+mmc5883.c:49:6:mmc5883_powerReset	8	static
+mmc5883.c:64:5:mmc5883_waitMeasure	48	static
+mmc5883.c:90:10:mmc5883_processBuff	16	static
+mmc5883.c:97:6:mmc5883_configure	40	static
+mmc5883.c:109:6:mmc5883_readManufac	40	static
+mmc5883.c:123:6:mmc5883_readMagData	112	static
+mmc5883.c:185:6:mmc5883_readTempData	48	static

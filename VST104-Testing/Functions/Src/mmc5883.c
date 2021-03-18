@@ -13,7 +13,7 @@
 static const uint8_t ADDR[] = {0x30, 0x30};
 
 // measurement maximal timeout (in ms)
-#define TIMEOUT		20
+#define TIMEOUT		30	// 100Hz per channel
 
 // MMC5883 significant registers
 #define REG_STAT	0x07
@@ -39,9 +39,10 @@ static uint8_t CMD_SW_RST	= 0x80;
 #define RDY_TM_T	1
 
 #define MAG_So		0.25	// mG/LSB
-#define	MAG_FS		8		// G
+#define	MAG_FS		8.0		// G
 #define T_So		0.7		// LSB/degC
-#define T_Off		-75		// degC
+#define T_Off		-75.0	// degC
+
 
 /* SUPPORT FUNCTIONS */
 
@@ -67,7 +68,7 @@ int mmc5883_waitMeasure(I2C_HandleTypeDef *hand, bool type, int dev) {
 	int cnt = 0;
 
 	// periodically check status register
-	while(cnt*10 < TIMEOUT) {
+	while(cnt*5 < TIMEOUT) {
 		// read status register
 		ret = HAL_I2C_Mem_Read(hand, ADDR[dev] << 1, REG_STAT, 1, &buff, 1, I2C_TIMEOUT);
 		if(ret != HAL_OK) log_send(1, "mmc5883_waitMeasure", dev, "na", 1);

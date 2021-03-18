@@ -12,16 +12,12 @@
 // MCP9804 list of I2C addresses
 static const uint8_t ADDR[] = {0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1E, 0x1F};
 
-// measurement maximal timeout (in ms)
-#define TIMEOUT		20
-
 // MCP9804 significant registers
 #define REG_CONF	0x01
 #define REG_TEMP	0x05
 #define REG_ID		0x06
 #define REG_DEV		0x07
 #define REG_RES		0x08
-
 
 
 /* SUPPORT FUNCTIONS */
