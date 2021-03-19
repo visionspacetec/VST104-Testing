@@ -6,10 +6,16 @@
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
-		<item key="selection" value="dev"/>
+		<item key="selection" value="command"/>
 		<list key="findhistory">
-			<item value="device"/>
+			<item value="sCmd"/>
+			<item value="CMD_ID_DEV"/>
+			<item value="CMD_ID_TYPE"/>
+			<item value="sCommand"/>
+			<item value="command"/>
+			<item value="QSPI_CS3_GPIO_Port"/>
 			<item value="handler"/>
+			<item value="device"/>
 			<item value="value"/>
 			<item value="acc"/>
 			<item value="result"/>
@@ -17,29 +23,23 @@
 			<item value="REG_PWR1"/>
 			<item value="REG_DATA"/>
 			<item value="REG_MAG"/>
-			<item value="I2C4_EN"/>
-			<item value="i2c4_EN"/>
-			<item value="HAL_MAX_DELAY"/>
-			<item value="UART3_EN_Pin"/>
-			<item value="UART2_EN_Pin"/>
-			<item value="TEST1"/>
 		</list>
 		<list key="replacehistory">
-			<item value="dev"/>
+			<item value="command"/>
+			<item value="CMD_RUID"/>
+			<item value="CMD_"/>
+			<item value="CMD_RDID"/>
+			<item value="CMDRDID"/>
+			<item value="sCmd"/>
+			<item value="cmd"/>
+			<item value="GPIOA"/>
 			<item value="hand"/>
+			<item value="dev"/>
 			<item value="val"/>
 			<item value="gyro"/>
 			<item value="ret"/>
 			<item value="REG_MAG"/>
 			<item value=""/>
-			<item value="I2C_TIMEOUT"/>
-			<item value="I2C"/>
-			<item value="ADDR"/>
-			<item value="tmp"/>
-			<item value="tmpManu"/>
-			<item value="valTmp"/>
-			<item value="static uint8_t"/>
-			<item value="&quot;na&quot;"/>
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">

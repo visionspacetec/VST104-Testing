@@ -36,4 +36,5 @@
 "Functions/Src/mcp9804.o"
 "Functions/Src/mmc5883.o"
 "Functions/Src/mpu6050.o"
+"Functions/Src/s25fl256l.o"
 "Functions/Src/testing_tools.o"

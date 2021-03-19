@@ -17,7 +17,8 @@ UART_HandleTypeDef *huart_B;
 /* DEFINITIONS AND CONSTANTS */
 
 // HAL_Status abbreviations
-static const char STATUS[5][12] = {"HAL_OK", "HAL_ERROR", "HAL_BUSY", "HAL_TIMEOUT", "I2C_MEASURE"};
+static const char STATUS[6][13] = {"HAL_OK", "HAL_ERROR", "HAL_BUSY", "HAL_TIMEOUT",
+								   "I2C_MEASURE", "QSPI_COMMAND"};
 
 
 /* FUNCTIONS */

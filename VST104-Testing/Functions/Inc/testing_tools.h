@@ -16,6 +16,13 @@
 #include "stm32l4xx_hal.h"
 
 
+/* DEFINITIONS */
+
+// artificial abbreviations index
+#define	HAL_I2C		4
+#define HAL_QSPI	5
+
+
 /* FUNCTIONS */
 
 void scanI2Caddr(I2C_HandleTypeDef *handler);

@@ -1,0 +1,114 @@
+/*
+ *	Author: Filip Geib
+ *	(c) 2021
+ */
+
+
+#include"s25fl256l.h"
+
+
+/* DEFINITIONS AND CONSTANTS */
+
+// S25FL256L significant commands
+static uint8_t CMD_QUAD		= 0x02;
+
+static uint8_t CMD_RDID		= 0x9F;
+static uint8_t CMD_RUID		= 0x4B;
+
+
+/* SUPPORT FUNCTIONS */
+
+int s25fl256l_processCommand(QSPI_HandleTypeDef *hand, QSPI_CommandTypeDef *cmd, uint8_t *buff, int dev) {
+	HAL_StatusTypeDef ret;
+
+	// set all devices
+	HAL_GPIO_WritePin(GPIOA, QSPI_CS1_Pin | QSPI_CS2_Pin | QSPI_CS3_Pin, GPIO_PIN_SET);
+	HAL_Delay(5);
+
+	// reset appropriate device
+	if(dev == 0) 		HAL_GPIO_WritePin(GPIOA, QSPI_CS1_Pin, GPIO_PIN_RESET);
+	else if(dev == 1) 	HAL_GPIO_WritePin(GPIOA, QSPI_CS2_Pin, GPIO_PIN_RESET);
+	else 				HAL_GPIO_WritePin(GPIOA, QSPI_CS3_Pin, GPIO_PIN_RESET);
+
+	// send command
+	ret = HAL_QSPI_Command(hand, cmd, HAL_QPSI_TIMEOUT_DEFAULT_VALUE);
+	if(ret != HAL_OK) {
+		log_error("s25fl256l_processCommand", dev, 0, ret);
+		return 1;
+	}
+
+	// receive answer
+	ret = HAL_QSPI_Receive(hand, buff, HAL_QPSI_TIMEOUT_DEFAULT_VALUE);
+	if(ret != HAL_OK) {
+		log_error("s25fl256l_processCommand", dev, 1, ret);
+		return 1;
+	}
+
+	// set all devices
+	HAL_GPIO_WritePin(GPIOA, QSPI_CS1_Pin | QSPI_CS2_Pin | QSPI_CS3_Pin , GPIO_PIN_SET);
+
+	return 0;
+}
+
+
+/* MAIN FUNCTIONS */
+
+void s25fl256l_configure(QSPI_HandleTypeDef *hand, int dev) {
+	int ret; uint8_t buff[8];
+
+	// create command
+	QSPI_CommandTypeDef command;
+	command.InstructionMode   	= QSPI_INSTRUCTION_1_LINE;
+	command.Instruction       	= CMD_RDID;
+	command.AddressMode       	= QSPI_ADDRESS_1_LINE ;
+	command.Address				=
+	command.AlternateByteMode 	= QSPI_ALTERNATE_BYTES_NONE;
+	command.DataMode          	= QSPI_DATA_1_LINE;
+	command.NbData            	= 0;
+	command.DummyCycles       	= 0;
+	command.DdrMode           	= QSPI_DDR_MODE_DISABLE;
+	command.DdrHoldHalfCycle  	= QSPI_DDR_HHC_ANALOG_DELAY;
+	command.SIOOMode          	= QSPI_SIOO_INST_EVERY_CMD;
+
+}
+
+
+void s25fl256l_readManufac(QSPI_HandleTypeDef *hand, int dev) {
+	int ret; uint8_t buff[8];
+
+	// create command
+	QSPI_CommandTypeDef command;
+	command.InstructionMode   	= QSPI_INSTRUCTION_1_LINE;
+	command.Instruction       	= CMD_RDID;
+	command.AddressMode       	= QSPI_ADDRESS_NONE;
+	command.AlternateByteMode 	= QSPI_ALTERNATE_BYTES_NONE;
+	command.DataMode          	= QSPI_DATA_1_LINE;
+	command.NbData            	= 1;
+	command.DummyCycles       	= 0;
+	command.DdrMode           	= QSPI_DDR_MODE_DISABLE;
+	command.DdrHoldHalfCycle  	= QSPI_DDR_HHC_ANALOG_DELAY;
+	command.SIOOMode          	= QSPI_SIOO_INST_EVERY_CMD;
+
+	// request and read manufacturer device type
+	ret = s25fl256l_processCommand(hand, &command, buff, dev);
+	if(ret != 0) log_error("s25fl256l_readManufac", dev, 0, HAL_QSPI);
+
+	// convert address to string
+	char tmp[17];
+	addr2str(buff, 3, tmp);
+	log_data("s25fl256l", dev, "dev_manufac", tmp, NAN);
+
+	// modify command
+	command.Instruction 	= CMD_RUID;
+	command.NbData          = 1;
+	command.DummyCycles     = 32;
+
+	// request and read unique device ID
+	ret = s25fl256l_processCommand(hand, &command, buff, dev);
+	if(ret != 0) log_error("s25fl256l_readManufac", dev, 1, HAL_QSPI);
+
+	// convert address to string
+	addr2str(buff, 8, tmp);
+	log_data("s25fl256l", dev, "dev_id", tmp, NAN);
+}
+

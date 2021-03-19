@@ -1,4 +1,4 @@
-23:40:09 **** Incremental Build of configuration Debug for project VST104-Testing ****
+00:28:12 **** Incremental Build of configuration Debug for project VST104-Testing ****
 make -j8 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g -DDEBUG -DUSE_HAL_DRIVER -DSTM32L496xx -c -I../Drivers/CMSIS/Include -I../Core/Inc -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Functions/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
 arm-none-eabi-g++ -o "VST104-Testing.elf" @"objects.list"   -mcpu=cortex-m4 -T"/CommonData/CVUT/intership/VisionSpace/VST104-Testing/VST104-Testing/STM32L496ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="VST104-Testing.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
@@ -8,17 +8,99 @@ arm-none-eabi-objdump -h -S  VST104-Testing.elf  > "VST104-Testing.list"
 arm-none-eabi-objcopy  -O binary  VST104-Testing.elf  "VST104-Testing.bin"
 arm-none-eabi-size   VST104-Testing.elf 
    text	   data	    bss	    dec	    hex	filename
-  56620	    496	   2576	  59692	   e92c	VST104-Testing.elf
+  49216	    496	   2568	  52280	   cc38	VST104-Testing.elf
+Finished building: VST104-Testing.bin
+Finished building: default.size.stdout
+ 
+ 
+Finished building: VST104-Testing.list
+ 
+00:28:21 **** Incremental Build of configuration Debug for project VST104-Testing ****
+make -j8 all 
+arm-none-eabi-size   VST104-Testing.elf 
+   text	   data	    bss	    dec	    hex	filename
+  49216	    496	   2568	  52280	   cc38	VST104-Testing.elf
+Finished building: default.size.stdout
+ 
+00:29:50 **** Incremental Build of configuration Debug for project VST104-Testing ****
+make -j8 all 
+arm-none-eabi-gcc "../Functions/Src/s25fl256l.c" -mcpu=cortex-m4 -std=gnu11 -g -DDEBUG -DUSE_HAL_DRIVER -DSTM32L496xx -c -I../Drivers/CMSIS/Include -I../Core/Inc -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Functions/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Functions/Src/s25fl256l.d" -MT"Functions/Src/s25fl256l.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Functions/Src/s25fl256l.o"
+arm-none-eabi-g++ -o "VST104-Testing.elf" @"objects.list"   -mcpu=cortex-m4 -T"/CommonData/CVUT/intership/VisionSpace/VST104-Testing/VST104-Testing/STM32L496ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="VST104-Testing.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+Finished building target: VST104-Testing.elf
+ 
+arm-none-eabi-objdump -h -S  VST104-Testing.elf  > "VST104-Testing.list"
+arm-none-eabi-objcopy  -O binary  VST104-Testing.elf  "VST104-Testing.bin"
+arm-none-eabi-size   VST104-Testing.elf 
+   text	   data	    bss	    dec	    hex	filename
+  49216	    496	   2568	  52280	   cc38	VST104-Testing.elf
+Finished building: VST104-Testing.bin
+Finished building: default.size.stdout
+ 
+ 
+Finished building: VST104-Testing.list
+ 
+00:31:35 **** Incremental Build of configuration Debug for project VST104-Testing ****
+make -j8 all 
+arm-none-eabi-gcc "../Functions/Src/s25fl256l.c" -mcpu=cortex-m4 -std=gnu11 -g -DDEBUG -DUSE_HAL_DRIVER -DSTM32L496xx -c -I../Drivers/CMSIS/Include -I../Core/Inc -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Functions/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Functions/Src/s25fl256l.d" -MT"Functions/Src/s25fl256l.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Functions/Src/s25fl256l.o"
+arm-none-eabi-g++ -o "VST104-Testing.elf" @"objects.list"   -mcpu=cortex-m4 -T"/CommonData/CVUT/intership/VisionSpace/VST104-Testing/VST104-Testing/STM32L496ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="VST104-Testing.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+Finished building target: VST104-Testing.elf
+ 
+arm-none-eabi-objdump -h -S  VST104-Testing.elf  > "VST104-Testing.list"
+arm-none-eabi-objcopy  -O binary  VST104-Testing.elf  "VST104-Testing.bin"
+arm-none-eabi-size   VST104-Testing.elf 
+   text	   data	    bss	    dec	    hex	filename
+  49216	    496	   2568	  52280	   cc38	VST104-Testing.elf
 Finished building: default.size.stdout
  
 Finished building: VST104-Testing.bin
  
 Finished building: VST104-Testing.list
  
-23:40:24 **** Incremental Build of configuration Debug for project VST104-Testing ****
+00:35:04 **** Incremental Build of configuration Debug for project VST104-Testing ****
 make -j8 all 
+arm-none-eabi-gcc "../Functions/Src/s25fl256l.c" -mcpu=cortex-m4 -std=gnu11 -g -DDEBUG -DUSE_HAL_DRIVER -DSTM32L496xx -c -I../Drivers/CMSIS/Include -I../Core/Inc -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Functions/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Functions/Src/s25fl256l.d" -MT"Functions/Src/s25fl256l.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Functions/Src/s25fl256l.o"
+../Functions/Src/s25fl256l.c: In function 's25fl256l_writeSectorRandom':
+../Functions/Src/s25fl256l.c:107:9: error: too many arguments to function 'HAL_QSPI_Transmit_IT'
+  107 |   ret = HAL_QSPI_Transmit_IT(hand, buff, dev[i]);
+      |         ^~~~~~~~~~~~~~~~~~~~
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:401,
+                 from ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Functions/Inc/s25fl256l.h:18,
+                 from ../Functions/Src/s25fl256l.c:7:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_qspi.h:591:23: note: declared here
+  591 | HAL_StatusTypeDef     HAL_QSPI_Transmit_IT  (QSPI_HandleTypeDef *hqspi, uint8_t *pData);
+      |                       ^~~~~~~~~~~~~~~~~~~~
+make: *** [Functions/Src/subdir.mk:47: Functions/Src/s25fl256l.o] Error 1
+"make -j8 all" terminated with exit code 2. Build might be incomplete.
+00:36:10 **** Incremental Build of configuration Debug for project VST104-Testing ****
+make -j8 all 
+arm-none-eabi-gcc "../Functions/Src/s25fl256l.c" -mcpu=cortex-m4 -std=gnu11 -g -DDEBUG -DUSE_HAL_DRIVER -DSTM32L496xx -c -I../Drivers/CMSIS/Include -I../Core/Inc -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Functions/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Functions/Src/s25fl256l.d" -MT"Functions/Src/s25fl256l.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Functions/Src/s25fl256l.o"
+../Functions/Src/s25fl256l.c: In function 's25fl256l_sendCommand':
+../Functions/Src/s25fl256l.c:63:36: error: 'TIMEOUT_QPSI' undeclared (first use in this function)
+   63 |  ret = HAL_QSPI_Command(hand, cmd, TIMEOUT_QPSI);
+      |                                    ^~~~~~~~~~~~
+../Functions/Src/s25fl256l.c:63:36: note: each undeclared identifier is reported only once for each function it appears in
+../Functions/Src/s25fl256l.c: In function 's25fl256l_writeSectorRandom':
+../Functions/Src/s25fl256l.c:107:39: error: 'TIMEOUT_QPSI' undeclared (first use in this function)
+  107 |   ret = HAL_QSPI_Transmit(hand, buff, TIMEOUT_QPSI);
+      |                                       ^~~~~~~~~~~~
+make: *** [Functions/Src/subdir.mk:47: Functions/Src/s25fl256l.o] Error 1
+"make -j8 all" terminated with exit code 2. Build might be incomplete.
+00:36:44 **** Incremental Build of configuration Debug for project VST104-Testing ****
+make -j8 all 
+arm-none-eabi-gcc "../Functions/Src/s25fl256l.c" -mcpu=cortex-m4 -std=gnu11 -g -DDEBUG -DUSE_HAL_DRIVER -DSTM32L496xx -c -I../Drivers/CMSIS/Include -I../Core/Inc -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Functions/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Functions/Src/s25fl256l.d" -MT"Functions/Src/s25fl256l.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Functions/Src/s25fl256l.o"
+arm-none-eabi-g++ -o "VST104-Testing.elf" @"objects.list"   -mcpu=cortex-m4 -T"/CommonData/CVUT/intership/VisionSpace/VST104-Testing/VST104-Testing/STM32L496ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="VST104-Testing.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+Finished building target: VST104-Testing.elf
+ 
+arm-none-eabi-objdump -h -S  VST104-Testing.elf  > "VST104-Testing.list"
+arm-none-eabi-objcopy  -O binary  VST104-Testing.elf  "VST104-Testing.bin"
 arm-none-eabi-size   VST104-Testing.elf 
    text	   data	    bss	    dec	    hex	filename
-  56620	    496	   2576	  59692	   e92c	VST104-Testing.elf
+  49208	    496	   2568	  52272	   cc30	VST104-Testing.elf
 Finished building: default.size.stdout
+ 
+Finished building: VST104-Testing.bin
+ 
+Finished building: VST104-Testing.list
  

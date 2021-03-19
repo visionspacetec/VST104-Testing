@@ -28,6 +28,7 @@
 
 #include "testing_functions.h"
 #include "adc.h"
+#include "s25fl256l.h"
 #include "mcp9804.h"
 #include "mmc5883.h"
 #include "lsm6ds3.h"
@@ -153,6 +154,27 @@ int main(void)
 
 	// open log isolators
 	log_enable();
+
+
+	for(int i=0; i<3; i++) {
+		s25fl256l_configure(&hqspi, i);
+	}
+
+
+	for(int i=0; i<3; i++) {
+		s25fl256l_readManufac(&hqspi, i);
+	}
+
+	int memmories[] = {0, 1};
+	s25fl256l_writeSectorRandom(&hqspi, memmories, 2, 0);
+
+
+
+	while(1) {
+		;
+	}
+
+
 
 	// MCP reset power
 	mcp9804_powerReset();

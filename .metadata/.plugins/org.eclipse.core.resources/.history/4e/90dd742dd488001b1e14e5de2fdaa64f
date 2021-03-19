@@ -1,0 +1,135 @@
+/*
+ * testing_functions.cpp
+ *
+ *  Created on: Mar 13, 2021
+ *      Author: Filip Geib
+ */
+
+
+#include "testing_functions.h"
+
+
+/* CONFIGURATION FUNCTIONS */
+
+
+/* CONTROL FUNCTIONS */
+
+/*
+
+	int flash_processCommand(QSPI_HandleTypeDef *handler, uint8_t command, uint8_t *buff, int size, int device) {
+		HAL_StatusTypeDef ret; QSPI_CommandTypeDef sCommand;
+
+		sCommand.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
+		sCommand.Instruction       = command;
+		sCommand.AddressMode       = QSPI_ADDRESS_NONE;
+		sCommand.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;	// OK
+		sCommand.DataMode          = QSPI_DATA_1_LINE;			// OK
+		sCommand.NbData            = size;
+		sCommand.DummyCycles       = 0;							// 8 : 1b left shift
+		sCommand.DdrMode           = QSPI_DDR_MODE_DISABLE;		// OK
+		sCommand.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
+		sCommand.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;	// OK
+
+		// set all devices
+		HAL_GPIO_WritePin(GPIOA, QSPI_CS1_Pin | QSPI_CS2_Pin , GPIO_PIN_SET);
+		HAL_GPIO_WritePin(QSPI_CS3_GPIO_Port, QSPI_CS3_Pin, GPIO_PIN_SET);
+		HAL_Delay(1);
+
+		// reset appropriate memory
+		if(device == 1) HAL_GPIO_WritePin(GPIOA, QSPI_CS1_Pin, GPIO_PIN_RESET);
+		else if(device ==2 ) HAL_GPIO_WritePin(GPIOA, QSPI_CS2_Pin, GPIO_PIN_RESET);
+		else HAL_GPIO_WritePin(QSPI_CS3_GPIO_Port, QSPI_CS3_Pin, GPIO_PIN_RESET);
+
+		// send command
+		int errNo = 0;
+		ret = HAL_QSPI_Command(handler, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE);
+		if(ret != HAL_OK) errNo = 1;
+
+		// receive answer
+		if(errNo == 0) {
+			ret = HAL_QSPI_Receive(handler, buff, HAL_QPSI_TIMEOUT_DEFAULT_VALUE);
+			if(ret != HAL_OK) errNo = 2;
+		}
+
+		// set all devices
+		HAL_GPIO_WritePin(GPIOA, QSPI_CS1_Pin | QSPI_CS2_Pin , GPIO_PIN_SET);
+		HAL_GPIO_WritePin(QSPI_CS3_GPIO_Port, QSPI_CS3_Pin, GPIO_PIN_SET);
+
+		return errNo;
+	}
+
+	int fram_processCommand(SPI_HandleTypeDef *handler, uint8_t *command, uint8_t *buff, int size, int device) {
+		HAL_StatusTypeDef ret;
+
+		// set all devices
+		HAL_GPIO_WritePin(GPIOC, SPI1_CS1_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOA, SPI1_CS2_Pin | SPI1_CS3_Pin, GPIO_PIN_SET);
+		HAL_Delay(1);
+
+		// reset appropriate memory
+		if(device == 1) HAL_GPIO_WritePin(GPIOC, SPI1_CS1_Pin, GPIO_PIN_RESET);
+		else if(device ==2 ) HAL_GPIO_WritePin(GPIOA, SPI1_CS2_Pin, GPIO_PIN_RESET);
+		else HAL_GPIO_WritePin(GPIOA, SPI1_CS3_Pin, GPIO_PIN_RESET);
+
+		// send command
+		int errNo = 0;
+		ret = HAL_SPI_Transmit(handler, command, 1, 100);
+		if(ret != HAL_OK) errNo = 1;
+
+		// receive answer
+		if(errNo == 0) {
+			ret = HAL_SPI_Receive(handler, buff, size, 100);
+			if(ret != HAL_OK) errNo = 2;
+		}
+
+		//set all devices
+		HAL_GPIO_WritePin(GPIOC, SPI1_CS1_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOA, SPI1_CS2_Pin | SPI1_CS3_Pin, GPIO_PIN_SET);
+
+		return errNo;
+	}
+
+*/
+
+/* TESTING FUNCTIONS */
+
+/*
+	void flash_manufacData(QSPI_HandleTypeDef *handler, int device) {
+		// prepare variables
+		int ret; uint8_t buff[8];
+
+		// request and read manufacturer device type
+		ret = flash_processCommand(handler, 0x9F, buff, 3, device);
+		if(ret != 0) log_send(1, "flash_manufacData->type", device, "na", ret);
+		else {
+			char tmp[7];
+			addr2str(buff, 3, tmp);
+			log_send(2, "flash_manufacData->type", device, tmp, NAN);
+		}
+
+		// request and read unique device ID
+		ret = flash_processCommand(handler, 0x4B, buff, 8, device);
+		if(ret != 0) log_send(1, "flash_manufacData->id", device, "na", ret);
+		else {
+			char tmp[17];
+			addr2str(buff, 8, tmp);
+			log_send(2, "flash_manufacData->type", device, tmp, NAN);
+		}
+	}
+
+	void fram_manufacData(SPI_HandleTypeDef *handler, int device) {
+		// prepare variables
+		int ret; uint8_t buff[9]; uint8_t command[] = {0x9F};
+
+		// request and read manufacturer device type
+		ret = fram_processCommand(handler, command, buff, 9, device);
+		if(ret != 0) log_send(1, "fram_manufacData", device, "na", ret);
+		else {
+			char tmp[19];
+			addr2str(buff, 9, tmp);
+			log_send(2, "flash_manufacData->type", device, tmp, NAN);
+		}
+
+	}
+
+*/

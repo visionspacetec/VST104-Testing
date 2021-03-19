@@ -1,0 +1,5 @@
+s25fl256l.c:34:6:s25fl256l_defaultCommand	16	static
+s25fl256l.c:50:5:s25fl256l_sendCommand	32	static
+s25fl256l.c:73:6:s25fl256l_writeSectorRandom	96	static
+s25fl256l.c:115:6:s25fl256l_configure	80	static
+s25fl256l.c:156:6:s25fl256l_readManufac	104	static

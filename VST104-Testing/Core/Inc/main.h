@@ -62,6 +62,16 @@ void Error_Handler(void);
 #define OSC32_IN_GPIO_Port GPIOC
 #define OSC32_OUT_Pin GPIO_PIN_15
 #define OSC32_OUT_GPIO_Port GPIOC
+#define QSPI_BK1_IO3_Pin GPIO_PIN_6
+#define QSPI_BK1_IO3_GPIO_Port GPIOF
+#define QSPI_BK1_IO2_Pin GPIO_PIN_7
+#define QSPI_BK1_IO2_GPIO_Port GPIOF
+#define QSPI_BK1_IO0_Pin GPIO_PIN_8
+#define QSPI_BK1_IO0_GPIO_Port GPIOF
+#define QSPI_BK1_I1_Pin GPIO_PIN_9
+#define QSPI_BK1_I1_GPIO_Port GPIOF
+#define QSPI_CLK_Pin GPIO_PIN_10
+#define QSPI_CLK_GPIO_Port GPIOF
 #define OSC_IN_Pin GPIO_PIN_0
 #define OSC_IN_GPIO_Port GPIOH
 #define OSC_EN_Pin GPIO_PIN_1
@@ -116,8 +126,9 @@ void Error_Handler(void);
 #define SW_0_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
-#define I2C_TIMEOUT 100
-#define UART_TIMEOUT 50
+#define UART_TIMEOUT	50
+#define I2C_TIMEOUT		100
+#define QSPI_TIMEOUT	100
 
 /* USER CODE END Private defines */
 
